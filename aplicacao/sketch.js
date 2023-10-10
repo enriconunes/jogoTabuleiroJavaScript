@@ -12,6 +12,7 @@ let casa = []
 let jogador = []
 let coresJogadores = []
 let turnoJogador;
+let desafioAberto;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -30,6 +31,7 @@ function setup() {
   //Instanciar objetos
   logo = new Logo();
   dado = new Dado(imagemDadoSeis);
+  dadoDesafio = new Dado(imagemDadoGirar);
   botaoConfig = new Botao(70, 60, 40, 40, "#5858e0");
   tabuleiro = new Tabuleiro();
   jogo = new Jogo();
@@ -105,6 +107,8 @@ function draw() {
       dado.imagem = imagemDadoSeis
       break;
   }
+
+  //Desenhar o dado normal
   dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
 
   //Botao configuracao
@@ -113,23 +117,40 @@ function draw() {
   //Definicoes imagem
   image(definicoesImg, 55, 45, 30, 30);
 
-  //Exibir desafios
-  //tabuleiro.confere_desafio(turnoJogador, casa[jogador[turnoJogador-1].posicao])
-
   //Mostrar indicador do jogador atual
   jogador[turnoJogador - 1].exibir_indicador_turno()
 
+  //Exibir caixa de desafio e o dado para desafios
+  if (desafioAberto) {
+    tabuleiro.exibir_desafio(jogador[turnoJogador - 1], casa[jogador[turnoJogador - 1].posicao], dadoDesafio)
+  }
+
   //Logo
   logo.desenhar_logo();
+
 }
 
 function mousePressed() {
 
   if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho)) {
 
-    retornoGirardado = dado.girar_dado()
+    //Move o jogador e confere se a casa que ele caiu é um desafio
     jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
-    console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
-    gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+    tabuleiro.isDesafio(casa[jogador[turnoJogador - 1].posicao])
+
+    //Se for um desafio, pausa os movimentos do dado
+    if (!desafioAberto) {
+      retornoGirardado = dado.girar_dado()
+      //jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
+      console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
+      gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+    } else {
+      //casa.resolver_desafio()
+      //chama a funcao de girar o dado
+      //o valor do dado girado é passado para o dado normal
+      //confere se passou no desafio
+      //cumpre as punicoes do jogador
+      //passa desafioAberto para falso
+    }
   }
 }

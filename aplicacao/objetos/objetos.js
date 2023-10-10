@@ -126,26 +126,32 @@ class Tabuleiro {
         pop()
     }
 
-    confere_desafio(jogador, casa) {
-        if (casa.isDesafio) {
-            push()
-
-            //desenhar quadro com o desafio
-            fill(this.cor)
-            stroke(this.corBorda)
-            strokeWeight(this.larguraBorda)
-            rectMode(CENTER)
-            rect(width / 2, height / 2, this.largura, this.altura)
-
-            //escrever a mensagem
-            let textoDesafio = `Jogador ${jogador} caiu no desafio da casa ${casa.numero}:\n${casa.textoDesafio}`
-            fill(255)
-            strokeWeight(0)
-            textSize(20)
-            textAlign(CENTER, CENTER)
-            text(textoDesafio, width / 2, height / 2)
-            pop()
+    isDesafio(casa) {
+        if (casa.isDesafio) { 
+            //variavel global para conferir se um desafio está em aberto
+            desafioAberto = true
         }
+    }
+
+    exibir_desafio(jogador, casa, dadoDesafio){
+        push()
+        //desenhar quadro com o desafio
+        fill(12, 54, 32, 230)
+        stroke(255)
+        strokeWeight(this.larguraBorda)
+        rectMode(CENTER)
+        rect(width / 2, height / 2, this.largura * 0.7, this.altura * 0.3)
+
+        //escrever a mensagem
+        let textoDesafio = `Jogador ${jogador.numero} caiu no desafio da casa ${casa.numero}:\n${casa.textoDesafio}`
+        fill(255, 255, 255, 230)
+        strokeWeight(0)
+        textSize(this.largura * 0.025)
+        textAlign(CENTER, CENTER)
+        text(textoDesafio, width / 2, height / 2)
+        pop()
+
+        dadoDesafio.desenhar_dado(this.largura, this.altura)
     }
 }
 
@@ -235,18 +241,21 @@ class Jogador {
 
     mover_jogador(valorDado) {
 
-        if (this.posicao + valorDado <= 46) {
-            if (this.posicao == 0) {
-                if (valorDado == 6) {
-                    this.posicao = 1
+        //So move o jogador se nao houver um desafio em aberto
+        if(!desafioAberto){
+            if (this.posicao + valorDado <= 46) {
+                if (this.posicao == 0) {
+                    if (valorDado == 6) {
+                        this.posicao = 1
+                    }
+                } else {
+                    this.posicao += valorDado
                 }
-            } else {
-                this.posicao += valorDado
-            }
 
-            this.qtdJogadas += 1
-            this.pontuacao -= this.qtdJogadas
-        }
+                this.qtdJogadas += 1
+                this.pontuacao -= this.qtdJogadas
+            }
+        }   
 
         if (this.posicao == 46) {
             this.estado = "chegou"

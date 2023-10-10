@@ -83,7 +83,7 @@ function confereDesafio(jogador, casa, tabuleiro, logo) {
     }
 }
 
-function gerirTurno(qtdJogadores) {
+function gerirTurno(qtdJogadores, jogadorAtual) {
     turnoJogador += 1
     if(turnoJogador > qtdJogadores){
         turnoJogador = 1

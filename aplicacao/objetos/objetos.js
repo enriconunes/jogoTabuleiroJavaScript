@@ -249,7 +249,7 @@ class Jogador {
         }
 
         if (this.posicao == 46) {
-            this.estado = "finalizou"
+            this.estado = "chegou"
         }
     }
 

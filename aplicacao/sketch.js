@@ -35,7 +35,7 @@ function setup() {
   jogo = new Jogo();
 
   //Instanciar 46 objetos do tipo Casa
-  for(var i = 0; i < 47; i++){
+  for (var i = 0; i < 47; i++) {
     var casaTemp = new Casa(tabuleiro.largura, tabuleiro.altura);
     casaTemp.numero = i
     casa.push(casaTemp);
@@ -48,7 +48,7 @@ function setup() {
   coresJogadores = ["red", "blue", "purple", "black"]
   for (var i = 0; i < jogo.qtdJogadores; i++) {
     var jogadorTemp = new Jogador();
-    jogadorTemp.numero = i+1
+    jogadorTemp.numero = i + 1
     jogadorTemp.cor = coresJogadores[i]
     jogador.push(jogadorTemp);
   }
@@ -58,7 +58,7 @@ function setup() {
 
   //Definir turnos - variavel global
   turnoJogador = 1;
-  
+
 }
 
 function draw() {
@@ -75,8 +75,13 @@ function draw() {
   desenharTodasAsCasas()
 
   //Desenhar jogadores na ordem do ultimo ao primeiro
-  for(let n = jogo.qtdJogadores; n > 0; n--){
-    jogador[n-1].desenhar_jogador(casa[jogador[n-1].posicao])
+  for (let n = jogo.qtdJogadores; n > 0; n--) {
+    jogador[n - 1].desenhar_jogador(casa[jogador[n - 1].posicao])
+  }
+
+  //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
+  if (jogador[turnoJogador - 1].estado == "chegou") {
+    turnoJogador += 1
   }
 
   //Desenhar dado
@@ -120,10 +125,11 @@ function draw() {
 
 function mousePressed() {
 
-  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho)){
+  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho)) {
+
     retornoGirardado = dado.girar_dado()
     jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
     console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
-    gerirTurno(jogo.qtdJogadores)
+    gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
   }
 }

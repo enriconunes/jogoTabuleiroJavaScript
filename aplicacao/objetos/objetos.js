@@ -133,7 +133,7 @@ class Tabuleiro {
         }
     }
 
-    exibir_desafio(jogador, casa, dadoDesafio){
+    exibir_desafio(jogador, casa){
         push()
         //desenhar quadro com o desafio
         fill(12, 54, 32, 230)
@@ -150,8 +150,6 @@ class Tabuleiro {
         textAlign(CENTER, CENTER)
         text(textoDesafio, width / 2, height / 2)
         pop()
-
-        dadoDesafio.desenhar_dado(this.largura, this.altura)
     }
 }
 
@@ -196,6 +194,17 @@ class Casa {
         this.posicaoY = posicaoY;
 
         pop()
+    }
+
+    resolver_desafio(jogador, valorDado){
+        if (valorDado > this.desafioDadoMaiorQue && valorDado < this.desafioDadoMenorQue){
+            desafioAberto = false
+        } else{
+            jogador.posicao -= this.desafioVoltarCasasQtd
+            desafioAberto = false
+        }
+
+        console.log("Valor dado desafio: ", valorDado)
     }
 }
 

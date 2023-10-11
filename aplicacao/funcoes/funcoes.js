@@ -21,6 +21,8 @@ function createScreenBorder() {
 
 //Configuracoes das casas do jogo
 function configurarCasas() {
+
+    // Configuracoes gerais das casas
     casa[0].largura += casa[0].largura * 0.5
     casa[0].numero = "Início";
     casa[46].numero = "Fim"
@@ -35,6 +37,7 @@ function configurarCasas() {
     casa[40].corFundo = "#e3a549";
     casa[45].corFundo = "#e3a549";
 
+    // Definir que as casas sao desafios
     casa[2].isDesafio = true;
     casa[7].isDesafio = true;
     casa[11].isDesafio = true;
@@ -46,10 +49,49 @@ function configurarCasas() {
     casa[40].isDesafio = true;
     casa[45].isDesafio = true;
 
+    //Definir os desafios e a punicao de cada casa
     casa[2].desafioDadoMaiorQue = 2
     casa[2].desafioDadoMenorQue = 5
     casa[2].desafioVoltarCasasQtd = 1
 
+    casa[7].desafioDadoMaiorQue = 1
+    casa[7].desafioDadoMenorQue = 4
+    casa[7].desafioVoltarCasasQtd = 4
+
+    casa[11].desafioDadoMaiorQue = 3
+    casa[11].desafioDadoMenorQue = 6
+    casa[11].desafioVoltarCasasQtd = 5
+
+    casa[17].desafioDadoMaiorQue = 0
+    casa[17].desafioDadoMenorQue = 4
+    casa[17].desafioVoltarCasasQtd = 9
+
+    casa[21].desafioDadoMaiorQue = 2
+    casa[21].desafioDadoMenorQue = 5
+    casa[21].desafioVoltarCasasQtd = 5
+
+    casa[26].desafioDadoMaiorQue = 1
+    casa[26].desafioDadoMenorQue = 5
+    casa[26].desafioVoltarCasasQtd = 8
+
+    casa[28].desafioDadoMaiorQue = 2
+    casa[28].desafioDadoMenorQue = 6
+    casa[28].desafioVoltarCasasQtd = 27
+
+    casa[37].desafioDadoMaiorQue = 3
+    casa[37].desafioDadoMenorQue = 7
+    casa[37].desafioVoltarCasasQtd = 10
+
+    casa[40].desafioDadoMaiorQue = 1
+    casa[40].desafioDadoMenorQue = 3
+    casa[40].desafioVoltarCasasQtd = 10
+
+    casa[45].desafioDadoMaiorQue = 3
+    casa[45].desafioDadoMenorQue = 7
+    casa[45].desafioVoltarCasasQtd = 16
+
+
+    //Definir os textos de cada casa
     casa[2].textoDesafio = `Gire o dado e tire um numero entre ${casa[2].desafioDadoMaiorQue} e ${casa[2].desafioDadoMenorQue} ou volte ${casa[2].desafioVoltarCasasQtd} casas.`
     casa[7].textoDesafio = `Gire o dado e tire um numero entre ${casa[7].desafioDadoMaiorQue} e ${casa[7].desafioDadoMenorQue} ou volte ${casa[7].desafioVoltarCasasQtd} casas.`
     casa[11].textoDesafio = `Gire o dado e tire um numero entre ${casa[11].desafioDadoMaiorQue} e ${casa[11].desafioDadoMenorQue} ou volte ${casa[11].desafioVoltarCasasQtd} casas.`
@@ -83,7 +125,7 @@ function confereDesafio(jogador, casa, tabuleiro, logo) {
     }
 }
 
-function gerirTurno(qtdJogadores, jogadorAtual) {
+function gerirTurno(qtdJogadores) {
     turnoJogador += 1
     if(turnoJogador > qtdJogadores){
         turnoJogador = 1

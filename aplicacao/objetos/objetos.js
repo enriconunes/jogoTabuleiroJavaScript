@@ -151,6 +151,34 @@ class Tabuleiro {
         text(textoDesafio, width / 2, height / 2)
         pop()
     }
+
+    exibir_placar(configuracoesJogo) {
+        push()
+
+        rectMode(CENTER)
+        fill("#393993")
+        stroke(255)
+        strokeWeight(2)
+
+        rect(width / 2, height / 2, this.largura * 0.5, this.altura * 0.6)
+
+        //escrever a mensagem
+        fill(255, 255, 255, 230)
+        strokeWeight(0)
+        textAlign(CENTER, CENTER)
+
+        textSize(this.largura * 0.03)
+        text("ORDEM DE CHEGADA:", width / 2, height / 2 - this.largura * 0.05)
+
+        textSize(this.largura * 0.025)
+        for (let n = 0; n < configuracoesJogo.qtdJogadores - 1; n++) {
+            let texto = `${n + 1}º.     Pontuação: ${configuracoesJogo.ordemChegada[n].pontuacao}`
+            text(texto, width / 2, height / 2 + this.largura * 0.055 * n)
+            configuracoesJogo.ordemChegada[n].desenhar_jogador_placar(this, width / 2 - this.largura * 0.065, height / 2 - this.largura * 0.01 + this.largura * 0.055 * n)
+        }
+
+        pop()
+    }
 }
 
 class Casa {
@@ -219,7 +247,6 @@ class Jogador {
         this.posicaoCirculoY = ""
         this.circuloLargura = ""
         this.pontuacao = 100
-        this.qtdJogadas = 0
         this.jogouDado = ""
         this.estado = ""
     }
@@ -248,6 +275,32 @@ class Jogador {
         pop()
     }
 
+    desenhar_jogador_placar(tabuleiro, posicaoX, posicaoY) {
+        push()
+
+        rectMode(CENTER)
+        fill(this.cor)
+        stroke(255)
+        strokeWeight(2)
+
+        //Formato do jogador
+        this.posicaoCirculoX = posicaoX
+        this.posicaoCirculoY = posicaoY 
+        this.circuloLargura = tabuleiro.altura / 10 * 0.3
+        triangle(this.posicaoCirculoX, this.posicaoCirculoY, this.posicaoCirculoX - this.circuloLargura / 2, this.posicaoCirculoY + this.circuloLargura * 1.5, this.posicaoCirculoX + this.circuloLargura / 2, this.posicaoCirculoY + this.circuloLargura * 1.5)
+        ellipse(this.posicaoCirculoX, this.posicaoCirculoY, this.circuloLargura, this.circuloLargura);
+
+        //Texto do numero do jogador
+        textAlign(CENTER, CENTER)
+        fill(255)
+        strokeWeight(0)
+        textSize(this.circuloLargura*0.8)
+        text(this.numero, this.posicaoCirculoX, this.posicaoCirculoY)
+
+        pop()
+    }
+
+
     mover_jogador(valorDado) {
 
         //So move o jogador se nao houver um desafio em aberto
@@ -259,16 +312,16 @@ class Jogador {
                     }
                 } else {
                     this.posicao += valorDado
-                }
-
-                this.qtdJogadas += 1
-                this.pontuacao -= this.qtdJogadas
+                } 
             }
         }
 
         if (this.posicao == 46) {
             this.estado = "chegou"
         }
+
+        //Decrementa um valor da pontuacao a cada jogada
+        this.pontuacao--
     }
 
     exibir_indicador_turno() {
@@ -288,13 +341,21 @@ class Jogador {
 class Jogo {
 
     constructor() {
-        this.qtdJogadores = 0;
-        this.ordemChegada = []
+        this.qtdJogadores = "";
+        this.ordemChegada = [];
     }
 
     adicionar_jogador_lista_chegada(jogador){
-        if (!this.ordemChegada.includes(jogador.numero)){
-            this.ordemChegada.push(jogador.numero)
+        if (!this.ordemChegada.includes(jogador)){
+            this.ordemChegada.push(jogador)
+        }
+    }
+
+    confere_terminou() {
+        if (this.ordemChegada.length == this.qtdJogadores-1){
+            return true;
+        } else{
+            return false;
         }
     }
 

@@ -126,9 +126,14 @@ function draw() {
     ativarDadoDesafio = true
   }
 
-  //Desenhar o dado normal
-  dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
-
+  //Desenhar o dado se o jogo nao tiver terminado
+  if(!jogo.confere_terminou()){
+    dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
+  } else{
+    tabuleiro.desenhar_tabuleiro()
+    tabuleiro.exibir_placar(jogo)
+  }
+  
   //Logo
   logo.desenhar_logo();
 
@@ -136,13 +141,20 @@ function draw() {
 
 function mousePressed() {
 
-  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho)) {
+  //Confere se o mouse está em cima do dado e se o jogo ainda nao terminou para executar as ações
+  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
 
     //Move o jogador e confere se a casa que ele caiu é um desafio
     retornoGirardado = dado.girar_dado()
     jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
     tabuleiro.isDesafio(casa[jogador[turnoJogador - 1].posicao])
     console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
+
+    //Adicionar o jogador à lista de jogadores que ja chegaram
+    if (jogador[turnoJogador - 1].posicao == 46) {
+      console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
+      jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
+    }
 
     //Se for um desafio, nao passa a vez para o proximo jogador - mantem o turno
     if (!desafioAberto) {      
@@ -160,13 +172,6 @@ function mousePressed() {
 
       }
     }
-
-    //Adicionar o jogador à lista de jogadores que ja chegaram
-    if (jogador[turnoJogador - 1].posicao == 46) {
-      console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
-      jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
-    }
-    console.log(jogo.ordemChegada)
   }
 
 }

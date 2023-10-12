@@ -85,8 +85,8 @@ function draw() {
   }
 
   //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
-  if (jogador[turnoJogador - 1].estado == "chegou") {
-    turnoJogador += 1
+  if (jogador[turnoJogador - 1].posicao == 46) {
+    gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
   }
 
   //Desenhar dado
@@ -160,5 +160,13 @@ function mousePressed() {
 
       }
     }
+
+    //Adicionar o jogador à lista de jogadores que ja chegaram
+    if (jogador[turnoJogador - 1].posicao == 46) {
+      console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
+      jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
+    }
+    console.log(jogo.ordemChegada)
   }
+
 }

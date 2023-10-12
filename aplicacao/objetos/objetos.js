@@ -83,7 +83,7 @@ class Dado {
         let dadoHover = isHover(this.posicaoX, this.posicaoX + this.tamanho, this.posicaoY, this.posicaoY + this.tamanho);
 
         if (dadoHover) {
-            cursor(HAND) 
+            cursor(HAND)
         }
 
         pop()
@@ -127,13 +127,13 @@ class Tabuleiro {
     }
 
     isDesafio(casa) {
-        if (casa.isDesafio) { 
+        if (casa.isDesafio) {
             //variavel global para conferir se um desafio está em aberto
             desafioAberto = true
         }
     }
 
-    exibir_desafio(jogador, casa){
+    exibir_desafio(jogador, casa) {
         push()
         //desenhar quadro com o desafio
         fill(12, 54, 32, 230)
@@ -196,10 +196,10 @@ class Casa {
         pop()
     }
 
-    resolver_desafio(jogador, valorDado){
-        if (valorDado > this.desafioDadoMaiorQue && valorDado < this.desafioDadoMenorQue){
+    resolver_desafio(jogador, valorDado) {
+        if (valorDado > this.desafioDadoMaiorQue && valorDado < this.desafioDadoMenorQue) {
             desafioAberto = false
-        } else{
+        } else {
             jogador.posicao -= this.desafioVoltarCasasQtd
             desafioAberto = false
         }
@@ -214,7 +214,7 @@ class Jogador {
         this.numero = ""
         this.cor = ""
         this.tamanhoBase = ""
-        this.posicao = 0
+        this.posicao = 41
         this.posicaoCirculoX = ""
         this.posicaoCirculoY = ""
         this.circuloLargura = ""
@@ -251,7 +251,7 @@ class Jogador {
     mover_jogador(valorDado) {
 
         //So move o jogador se nao houver um desafio em aberto
-        if(!desafioAberto){
+        if (!desafioAberto) {
             if (this.posicao + valorDado <= 46) {
                 if (this.posicao == 0) {
                     if (valorDado == 6) {
@@ -264,7 +264,7 @@ class Jogador {
                 this.qtdJogadas += 1
                 this.pontuacao -= this.qtdJogadas
             }
-        }   
+        }
 
         if (this.posicao == 46) {
             this.estado = "chegou"
@@ -289,6 +289,13 @@ class Jogo {
 
     constructor() {
         this.qtdJogadores = 0;
+        this.ordemChegada = []
+    }
+
+    adicionar_jogador_lista_chegada(jogador){
+        if (!this.ordemChegada.includes(jogador.numero)){
+            this.ordemChegada.push(jogador.numero)
+        }
     }
 
 }

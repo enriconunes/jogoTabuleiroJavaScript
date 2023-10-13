@@ -1,22 +1,22 @@
 class Logo {
-    constructor() {
+    constructor(logoImg) {
         this.imagem = logoImg;
         this.posY = 0
-
-        if (width < 800) {
-            this.posX = width * 0.5 - width * 0.15
-            this.largura = width * 0.3
-            this.altura = width * 0.15
-        } else {
-            this.posX = width * 0.5 - width * 0.1
-            this.largura = width * 0.2
-            this.altura = width * 0.1
-        }
+        this.posX = 0
+        this.largura = 0
+        this.altura = 0
     }
 
-    desenhar_logo() {
+    desenhar_logo(tabuleiro) {
         push();
+
+        this.altura = tabuleiro.largura * 0.2
+        this.largura = tabuleiro.largura * 0.4
+        this.posX = width / 2 - this.largura / 2
+        this.posY = height / 2 - tabuleiro.altura / 1.35
+
         image(this.imagem, this.posX, this.posY, this.largura, this.altura)
+
         pop();
     }
 }
@@ -152,6 +152,25 @@ class Tabuleiro {
         pop()
     }
 
+    exibir_console(turno) {
+        push()
+        //desenhar quadro com o desafio
+        fill("#185c37")
+        stroke(255)
+        strokeWeight(this.larguraBorda)
+        rectMode(CENTER)
+        rect(width / 2, height / 2 + this.altura / 1.7, this.largura * 0.8, this.altura * 0.1)
+
+        //escrever a mensagem
+        let textoDesafio = `Vez do jogador ${turno}`
+        fill(255, 255, 255, 230)
+        strokeWeight(0)
+        textSize(this.largura * 0.02)
+        textAlign(CENTER, CENTER)
+        text(textoDesafio, width / 2, height / 2 + this.altura / 1.7)
+        pop()
+    }
+
     exibir_placar(configuracoesJogo) {
         push()
 
@@ -242,7 +261,7 @@ class Jogador {
         this.numero = ""
         this.cor = ""
         this.tamanhoBase = ""
-        this.posicao = 41
+        this.posicao = 0
         this.posicaoCirculoX = ""
         this.posicaoCirculoY = ""
         this.circuloLargura = ""
@@ -285,7 +304,7 @@ class Jogador {
 
         //Formato do jogador
         this.posicaoCirculoX = posicaoX
-        this.posicaoCirculoY = posicaoY 
+        this.posicaoCirculoY = posicaoY
         this.circuloLargura = tabuleiro.altura / 10 * 0.3
         triangle(this.posicaoCirculoX, this.posicaoCirculoY, this.posicaoCirculoX - this.circuloLargura / 2, this.posicaoCirculoY + this.circuloLargura * 1.5, this.posicaoCirculoX + this.circuloLargura / 2, this.posicaoCirculoY + this.circuloLargura * 1.5)
         ellipse(this.posicaoCirculoX, this.posicaoCirculoY, this.circuloLargura, this.circuloLargura);
@@ -294,7 +313,7 @@ class Jogador {
         textAlign(CENTER, CENTER)
         fill(255)
         strokeWeight(0)
-        textSize(this.circuloLargura*0.8)
+        textSize(this.circuloLargura * 0.8)
         text(this.numero, this.posicaoCirculoX, this.posicaoCirculoY)
 
         pop()
@@ -312,7 +331,7 @@ class Jogador {
                     }
                 } else {
                     this.posicao += valorDado
-                } 
+                }
             }
         }
 
@@ -345,16 +364,16 @@ class Jogo {
         this.ordemChegada = [];
     }
 
-    adicionar_jogador_lista_chegada(jogador){
-        if (!this.ordemChegada.includes(jogador)){
+    adicionar_jogador_lista_chegada(jogador) {
+        if (!this.ordemChegada.includes(jogador)) {
             this.ordemChegada.push(jogador)
         }
     }
 
     confere_terminou() {
-        if (this.ordemChegada.length == this.qtdJogadores-1){
+        if (this.ordemChegada.length == this.qtdJogadores - 1) {
             return true;
-        } else{
+        } else {
             return false;
         }
     }

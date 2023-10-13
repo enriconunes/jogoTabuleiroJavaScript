@@ -30,7 +30,7 @@ function setup() {
   definicoesImg = loadImage("./imagens/definicoes.png")
 
   //Instanciar objetos
-  logo = new Logo();
+  logo = new Logo(logoImg);
   dado = new Dado(imagemDadoSeis);
   botaoConfig = new Botao(70, 60, 40, 40, "#5858e0");
   tabuleiro = new Tabuleiro();
@@ -126,16 +126,24 @@ function draw() {
     ativarDadoDesafio = true
   }
 
-  //Desenhar o dado se o jogo nao tiver terminado
-  if(!jogo.confere_terminou()){
+  if (!jogo.confere_terminou()) {
+
+    //Desenhar o dado se o jogo nao tiver terminado
     dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
-  } else{
+
+    //Exibir console com informacoes da partida
+    tabuleiro.exibir_console(turnoJogador)
+
+  } else {
+
+    //Caso o jogo tenha acabado, "limpa" o tabueleiro e exibe o placar
     tabuleiro.desenhar_tabuleiro()
     tabuleiro.exibir_placar(jogo)
+
   }
-  
+
   //Logo
-  logo.desenhar_logo();
+  logo.desenhar_logo(tabuleiro);
 
 }
 
@@ -157,12 +165,12 @@ function mousePressed() {
     }
 
     //Se for um desafio, nao passa a vez para o proximo jogador - mantem o turno
-    if (!desafioAberto) {      
+    if (!desafioAberto) {
       gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
     } else {
 
       //conferir se o dado atual é para o desafio
-      if(ativarDadoDesafio){
+      if (ativarDadoDesafio) {
         let retornoGirarDadoDesafio = dado.girar_dado()
         casa[jogador[turnoJogador - 1].posicao].resolver_desafio(jogador[turnoJogador - 1], retornoGirarDadoDesafio)
         gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])

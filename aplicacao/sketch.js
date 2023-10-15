@@ -75,6 +75,7 @@ function setup() {
 }
 
 function draw() {
+
   cursor(ARROW)
   //Cor de Fundo
   background("#5858e0");
@@ -151,7 +152,9 @@ function draw() {
 
     //Exibir console com informacoes da partida
     tabuleiro.exibir_console(turnoJogador)
-    tabuleiro.exibir_console_lateral()
+    if (width >= 1280) {
+      tabuleiro.exibir_console_lateral()
+    }
 
   } else {
 
@@ -182,7 +185,11 @@ function mousePressed() {
       if (jogador[turnoJogador - 1].posicao == 0 && retornoGirardado != 6) {
         tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne permaneceu no início`
       } else {
-        tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne moveu para a casa ${jogador[turnoJogador - 1].posicao}`
+        if (jogador[turnoJogador - 1].posicao == 46) {
+          tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne chegou ao final!`
+        } else {
+          tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne moveu para a casa ${jogador[turnoJogador - 1].posicao}`
+        }
       }
 
     }

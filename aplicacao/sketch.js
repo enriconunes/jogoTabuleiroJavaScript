@@ -14,6 +14,11 @@ let coresJogadores = []
 let turnoJogador;
 let desafioAberto;
 let ativarDadoDesafio;
+let dueloAberto;
+let ativarDadoDuelo;
+let jogadorCasaOcupada;
+let valoresDadoDuelo = []
+let qtdGirosDado;
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -61,6 +66,12 @@ function setup() {
   //Definir turnos - variavel global
   turnoJogador = 1;
 
+  //Desafios e duelos iniciam fechados
+  dueloAberto = false
+  desafioAberto = false
+
+  //Quantidade de vezes que o dado do duelo foi girado - inicia em 0
+  qtdGirosDado = 0;
 }
 
 function draw() {
@@ -76,8 +87,9 @@ function draw() {
   //Desenhar casas do tabeuleiro
   desenharTodasAsCasas()
 
-  //Se for true, o dado atual é para jogar o desafio - inicia em falso
+  //Se for true, o dado atual sera usado para jogar o desafio ou o duelo - inicia em falso
   ativarDadoDesafio = false
+  ativarDadoDuelo = false
 
   //Desenhar jogadores na ordem do ultimo ao primeiro
   for (let n = jogo.qtdJogadores; n > 0; n--) {
@@ -120,10 +132,16 @@ function draw() {
   //Mostrar indicador do jogador atual
   jogador[turnoJogador - 1].exibir_indicador_turno()
 
-  //Exibir caixa de desafio e altera a imagem do dado
+  //Exibir caixa de desafio e altera a imagem do dado caso haja um desafio aberto
   if (desafioAberto) {
     tabuleiro.exibir_desafio(jogador[turnoJogador - 1], casa[jogador[turnoJogador - 1].posicao])
     ativarDadoDesafio = true
+  }
+
+  //Exibir caixa de duelo e altera a imagem do dado caso haja um duelo aberto
+  if (dueloAberto) {
+    tabuleiro.exibir_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada])
+    ativarDadoDuelo = true
   }
 
   if (!jogo.confere_terminou()) {
@@ -133,6 +151,7 @@ function draw() {
 
     //Exibir console com informacoes da partida
     tabuleiro.exibir_console(turnoJogador)
+    tabuleiro.exibir_console_lateral()
 
   } else {
 
@@ -153,33 +172,71 @@ function mousePressed() {
   if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
 
     //Move o jogador e confere se a casa que ele caiu é um desafio
-    retornoGirardado = dado.girar_dado()
-    jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
-    tabuleiro.isDesafio(casa[jogador[turnoJogador - 1].posicao])
-    console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
+    if (!dueloAberto) {
+      retornoGirardado = dado.girar_dado()
+      jogador[turnoJogador - 1].mover_jogador(retornoGirardado)
+      tabuleiro.isDesafio(casa[jogador[turnoJogador - 1].posicao])
+      console.log("Vez do jogador ", turnoJogador, "\nPosicao atual: ", jogador[turnoJogador - 1].posicao, "\nValor dado:    ", retornoGirardado)
 
-    //Adicionar o jogador à lista de jogadores que ja chegaram
+      //Definir texto do console lateral
+      if (jogador[turnoJogador - 1].posicao == 0 && retornoGirardado != 6) {
+        tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne permaneceu no início`
+      } else {
+        tabuleiro.textoConsoleLateral = `Jogador ${turnoJogador} tirou ${retornoGirardado}\ne moveu para a casa ${jogador[turnoJogador - 1].posicao}`
+      }
+
+    }
+
+    //Conferir se ja existe algum jogador na casa
+    for (let m = 0; m < jogo.qtdJogadores; m++) {
+      if (jogador[turnoJogador - 1].conferir_posicao_jogadores(jogador[m])) {
+        jogadorCasaOcupada = m
+        dueloAberto = true
+      }
+    }
+
+    //Adicionar o jogador à lista de jogadores que ja chegaram caso ele tenha chegado
     if (jogador[turnoJogador - 1].posicao == 46) {
       console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
       jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
     }
 
-    //Se for um desafio, nao passa a vez para o proximo jogador - mantem o turno
-    if (!desafioAberto) {
-      gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-    } else {
-
+    if (desafioAberto) {
       //conferir se o dado atual é para o desafio
       if (ativarDadoDesafio) {
         let retornoGirarDadoDesafio = dado.girar_dado()
-        casa[jogador[turnoJogador - 1].posicao].resolver_desafio(jogador[turnoJogador - 1], retornoGirarDadoDesafio)
+        casa[jogador[turnoJogador - 1].posicao].resolver_desafio(jogador[turnoJogador - 1], retornoGirarDadoDesafio, tabuleiro)
         gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
 
         //alterar a imagem do dado
         retornoGirardado = retornoGirarDadoDesafio
-
       }
     }
+    else if (dueloAberto) {
+      //conferir se o dado atual é para o duelo
+      if (ativarDadoDuelo) {
+        let retornoGirarDadoDuelo = dado.girar_dado()
+
+        //Guarda os valores dos 2 dados
+        valoresDadoDuelo[qtdGirosDado] = retornoGirarDadoDuelo // varia entre [0] e [1]
+
+        jogador[turnoJogador - 1].resolver_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada], valoresDadoDuelo[0], valoresDadoDuelo[1], tabuleiro)
+
+        //alterar a imagem do dado
+        retornoGirardado = retornoGirarDadoDuelo
+
+        console.log("Jogador ", jogador[turnoJogador - 1].numero, " caiu na casa ocupada pelo jogador ", jogadorCasaOcupada + 1, " e tirou o numero ", retornoGirarDadoDuelo)
+
+        if (!qtdGirosDado >= 1) {
+          gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+        }
+      }
+    }
+    else {
+      //Só passa a vez para o proximo jogador se nao for um desafio ou se nao for um duelo
+      gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+    }
+
   }
 
 }

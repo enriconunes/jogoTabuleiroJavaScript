@@ -243,19 +243,36 @@ class Tabuleiro {
         stroke(255)
         strokeWeight(this.larguraBorda)
         rectMode(CENTER)
-        rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
 
+        if (width >= 1280) {
+            //exibir o console na lateral
+            rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
+        } else{
+            //exibir o console embaixo
+            rect(width / 2, height / 2 + this.altura / 1.25, this.largura * 0.25, this.altura * 0.25)
+        }
+        
         //escrever a mensagem
         fill(255, 255, 255, 230)
         strokeWeight(0.5)
-
         textSize(this.largura * 0.018)
-        text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
+
+        if (width >= 1280) {
+            text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
+        } else{
+            text("CONSOLE", width / 2, height / 2 + this.altura / 1.35)
+        }
 
         strokeWeight(0)
-        textSize(this.largura * 0.018)
+        textSize(this.largura * 0.015)
         textAlign(CENTER, CENTER)
-        text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
+
+        if (width >= 1280){
+            text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
+        } else{
+            text(this.textoConsoleLateral, width / 2, height / 2 + this.altura / 1.23)
+        }
+        
         pop()
     }
 }
@@ -440,15 +457,15 @@ class Jogador {
             // comparar valores dos dados de cada jogador
             if (valorDado1 > valorDado2) {
                 jogadorCasaOcupada.posicao = 0
-                tabuleiro.textoConsoleLateral = `Jogador ${jogadorTurnoAtual.numero} venceu o\nduelo e o jogador ${jogadorCasaOcupada.numero}\nvoltou ao início.`
+                tabuleiro.textoConsoleLateral = `Jogador ${jogadorTurnoAtual.numero} venceu o duelo\npor ${valorDado1} a ${valorDado2} e o jogador ${jogadorCasaOcupada.numero} voltou\nao início.`
             }
             else if (valorDado1 == valorDado2) {
                 jogadorTurnoAtual.posicao = 0
-                tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o\nduelo e o jogador ${jogadorTurnoAtual.numero}\nvoltou ao início.`
+                tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o duelo\npelo empate de ${valorDado2} a ${valorDado1} e o jogador ${jogadorTurnoAtual.numero}\nvoltou ao início.`
             }
             else if (valorDado1 < valorDado2) {
                 jogadorTurnoAtual.posicao = 0
-                tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o\nduelo e o jogador ${jogadorTurnoAtual.numero}\nvoltou ao início.`
+                tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o duelo\npor ${valorDado2} a ${valorDado1} e o jogador ${jogadorTurnoAtual.numero} voltou\nao início.`
             }
 
         }

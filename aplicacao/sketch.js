@@ -152,9 +152,7 @@ function draw() {
 
     //Exibir console com informacoes da partida
     tabuleiro.exibir_console(turnoJogador)
-    if (width >= 1280) {
-      tabuleiro.exibir_console_lateral()
-    }
+    tabuleiro.exibir_console_lateral()
 
   } else {
 

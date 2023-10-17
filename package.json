@@ -1,0 +1,23 @@
+{
+  "name": "luckymaze",
+  "version": "1.0.0",
+  "description": "Jogo de tabuleiro com p5.js",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enriconunes/jogoTabuleiroJavaScript.git"
+  },
+  "author": "Enrico Nunes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enriconunes/jogoTabuleiroJavaScript/issues"
+  },
+  "homepage": "https://github.com/enriconunes/jogoTabuleiroJavaScript#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -33,15 +33,14 @@ class Botao {
         this.altura = altura;
         this.larguraBorda = 2;
         this.corBorda = 255;
+        this.texto = "Testando"
     }
 
     desenhar_botao() {
 
         push()
 
-        let hoverBotaoConfig = isHover(this.posX - this.largura / 2, this.posX + this.largura / 2, this.posY - this.altura / 2, this.posY + this.altura / 2)
-
-        if (hoverBotaoConfig) {
+        if (this.mouseIsHover()) {
             this.corVariante = this.corHover;
             cursor(HAND);
         } else {
@@ -54,8 +53,22 @@ class Botao {
         fill(this.corVariante);
         rect(this.posX, this.posY, this.largura, this.altura);
 
+        //Escrever texto do botao
+        textAlign(CENTER, CENTER)
+        fill(255)
+        strokeWeight(0)
+        textSize(this.largura * 0.09)
+        text(this.texto, this.posX, this.posY)
         pop()
 
+    }
+
+    mouseIsHover(){
+        if (isHover(this.posX - this.largura / 2, this.posX + this.largura / 2, this.posY - this.altura / 2, this.posY + this.altura / 2)){
+            return true
+        } else{
+            return false
+        }
     }
 }
 

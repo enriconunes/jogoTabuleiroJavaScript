@@ -182,3 +182,29 @@ function desenharTodasAsCasas() {
     }
 
 }
+
+// function lerRespostaRotaPost(caminhoRota) {
+//     return fetch(caminhoRota, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         }
+//     })
+//         .then(response => response.json())
+//         .then(data => {
+//             // 'data' contém a resposta JSON enviada pelo servidor
+//             return data;
+//         })
+//         .catch(error => {
+//             throw error;
+//         });
+// }
+
+function exibirTexto(texto, posicaoX, posicaoY, tamanho, cor){
+    push()
+    fill(cor)
+    textAlign(CENTER, CENTER)
+    textSize(tamanho)
+    text(texto, posicaoX, posicaoY)
+    pop()
+}

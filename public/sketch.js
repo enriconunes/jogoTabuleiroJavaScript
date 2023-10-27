@@ -20,9 +20,10 @@ let jogadorCasaOcupada;
 let valoresDadoDuelo = []
 let qtdGirosDado;
 let paginaAtual = 0;
-let userInput;
-let senhaInput;
 let respostaServidorUser;
+let idUserLogin;
+let idSalaAtual;
+let qtdJogadores;
 
 function preload() {
 
@@ -54,9 +55,15 @@ function setup() {
   dado = new Dado(imagemDadoSeis);
   botaoConfig = new Botao(70, 60, 40, 40, "#5858e0");
   tabuleiro = new Tabuleiro();
-  botaoCriarConta = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, tabuleiro.largura * 0.19, tabuleiro.altura * 0.1, "#5858e0")
-  botaoEntrarConta = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, tabuleiro.largura * 0.19, tabuleiro.altura * 0.1, "#5858e0")
+  botaoCriarConta = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, "black") //"#5858e0"
+  botaoEntrarConta = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+  botaoCriarSala = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+  botaoEntrarSala = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+  botaoEntrarPartida = new Botao(width / 2, height / 2 + tabuleiro.altura * 0.3, "black")
   jogo = new Jogo();
+  userInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.24, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
+  senhaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
+  salaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
 
   //Instanciar 46 objetos do tipo Casa
   for (var i = 0; i < 47; i++) {
@@ -89,10 +96,6 @@ function setup() {
 
   //Quantidade de vezes que o dado do duelo foi girado - inicia em 0
   qtdGirosDado = 0;
-
-  //Instanciar objetos do tipo Input
-  senhaInput = createInput('');
-  userInput = createInput('');
 }
 
 function draw() {
@@ -103,34 +106,103 @@ function draw() {
   //Desenhar Borda
   createScreenBorder();
 
-  //Desenhar tabuleiro
-  tabuleiro.desenhar_tabuleiro()
-
   //Gerir a exibição de paginas
-  if(paginaAtual == 0){
+  if (paginaAtual == 0) {
+    //Pagina inicial - Login e sigin
+    //Desenhar tabuleiro
+    tabuleiro.desenhar_tabuleiro()
 
-    //Pagina inicial - Sigin/Login
     fill(255)
-    //Input Text
-    text("Nome de usuário", width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.25)
-    userInput.position(width / 2 - tabuleiro.largura * 0.21, height/2 - tabuleiro.altura * 0.24);
-    userInput.size(tabuleiro.largura * 0.4, tabuleiro.altura * 0.09);
 
-    text("Senha", width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.11)
-    senhaInput.position(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1);
-    senhaInput.size(tabuleiro.largura * 0.4, tabuleiro.altura * 0.09);
+    //Input Text
+    userInput.desenhar_input("Username:")
+    senhaInput.desenhar_input("Password:")
 
     //Botoes
     botaoCriarConta.texto = "Criar uma conta"
-    botaoEntrarConta.texto = "Entrar na conta"
+    botaoCriarConta.largura = tabuleiro.largura * 0.19
+    botaoCriarConta.altura = tabuleiro.altura * 0.1
     botaoCriarConta.desenhar_botao()
+
+    botaoEntrarConta.texto = "Entrar na conta"
+    botaoEntrarConta.largura = tabuleiro.largura * 0.19
+    botaoEntrarConta.altura = tabuleiro.altura * 0.1
     botaoEntrarConta.desenhar_botao()
 
     //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
-    // exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
-    
+    exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
+
   }
-  else if(paginaAtual == 3){
+  else if (paginaAtual == 1) {
+    //Pagina entrar ou criar sala
+
+    //Remover inputs da pagina anterior
+    userInput.destruir_input()
+    senhaInput.destruir_input()
+
+    //Desenhar tabuleiro
+    tabuleiro.desenhar_tabuleiro()
+
+    //Input Text
+    salaInput.desenhar_input("Nome da sala:")
+
+    //Botoes
+    botaoCriarSala.texto = "Criar nova sala"
+    botaoCriarSala.largura = tabuleiro.largura * 0.19
+    botaoCriarSala.altura = tabuleiro.altura * 0.1
+    botaoCriarSala.desenhar_botao()
+
+    botaoEntrarSala.texto = "Entrar na sala"
+    botaoEntrarSala.largura = tabuleiro.largura * 0.19
+    botaoEntrarSala.altura = tabuleiro.altura * 0.1
+    botaoEntrarSala.desenhar_botao()
+
+    //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
+    exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
+  }
+  else if (paginaAtual == 2) {
+
+    //Remover input da pagina anterior
+    salaInput.destruir_input()
+
+    //Desenhar tabuleiro
+    tabuleiro.desenhar_tabuleiro()
+
+    //Exibir lista de jogadores que estão na sala
+    exibirTexto("Lista de jogadores na sala:", width / 2, height / 2 - tabuleiro.altura * 0.3, tabuleiro.largura * 0.04, "white")
+
+    //Receber dados da sala para fazer a listagem de jogadores na pagina 2
+    loadJSON(`/getListagemJogadoresSala?idSalaAtual=${idSalaAtual}`, (data) => {
+
+      //Listagem dos nomes dos jogadores recebidos
+      for(let ctr = 0; ctr < data.length; ctr++){
+
+        let nomeFormatado = capitalizeFirstLetter(data[ctr].username);
+
+        exibirTexto(nomeFormatado, width / 2, height / 2 - tabuleiro.altura * 0.2 + 30 * ctr, tabuleiro.largura * 0.03, "white")
+      }
+
+      //Guardar a quantidade de jogadores da sala
+      qtdJogadores = data.length;
+
+    })
+
+    //Botao entrar na partida
+    botaoEntrarPartida.texto = "Entrar na partida"
+    botaoEntrarPartida.largura = tabuleiro.largura * 0.19
+    botaoEntrarPartida.altura = tabuleiro.altura * 0.1
+    botaoEntrarPartida.desenhar_botao()
+
+    exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
+
+    noLoop()
+
+  }
+  else if (paginaAtual == 3) {
+
+    //Desenhar tabuleiro
+    tabuleiro.desenhar_tabuleiro()
+
     //Desenhar casas do tabeuleiro
     desenharTodasAsCasas()
 
@@ -216,6 +288,7 @@ function draw() {
 
 function mousePressed() {
 
+  //Acoes do dado
   //Confere se o mouse está em cima do dado e se o jogo ainda nao terminou para executar as ações
   if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
 
@@ -305,36 +378,98 @@ function mousePressed() {
   }
 
   //Acoes pagina inicial
-  if (botaoCriarConta.mouseIsHover()){
-
-    console.log(`Criar conta:\nUser: ${userInput.value()}\nPass: ${senhaInput.value()}`)
+  //Botao criar conta
+  if (botaoCriarConta.mouseIsHover() && paginaAtual == 0) {
 
     //Armazenar dados dos inputs
     let jsonInput = {
-      "username": userInput.value(),
-      "pass": senhaInput.value()
+      "username": userInput.input.value(),
+      "pass": senhaInput.input.value()
     }
 
     //Limpar campos input
-    senhaInput = createInput('');
-    userInput = createInput('');
+    userInput.input.value("")
+    senhaInput.input.value("")
 
     //Enviar dados do input para o servidor
     httpPost('/criarConta', jsonInput, 'json', (data) => {
-      console.log(data)
+      console.log("Data http post: ", data)
+      respostaServidorUser = data.status
     }, (err) => console.log(err))
 
-    // Ler mensagem enviada pelo servidor ao tentar criar conta e a exibir no sketch
-    // lerRespostaRotaPost('/criarConta')
-    //   .then(data => {
-    //     console.log("Dados recebidos da base de dados: ", data);
-    //     //Pegar resposta enviada pelo servidor e alterar mensagem de texto exibida na tela de login
-    //     respostaServidorUser = data.status
-    //   })
-    //   .catch(error => {
-    //     console.error('Erro:', error);
-    //   });
+  }
 
+  //Botao entrar na conta
+  if (botaoEntrarConta.mouseIsHover() && paginaAtual == 0) {
+
+    //Armazenar dados dos inputs
+    let jsonInput = {
+      "username": userInput.input.value(),
+      "pass": senhaInput.input.value()
+    }
+
+    //Enviar dados do input para o servidor
+    httpPost('/getEfetuarLogin', jsonInput, 'json', (data) => {
+      // console.log(data)
+      if (data.status == "Login efetuado!") {
+        paginaAtual = 1
+        idUserLogin = data.id_user
+      } else {
+        respostaServidorUser = data.status
+      }
+    }, (err) => console.log(err))
+
+  }
+
+  //Botao criar sala
+  if (botaoCriarSala.mouseIsHover() && paginaAtual == 1) {
+    //Armazenar dados dos inputs
+    let jsonInput = {
+      "nomeSala": salaInput.input.value(),
+    }
+
+    //Limpar campo input
+    salaInput.input.value("")
+
+    //Enviar dados do input para o servidor
+    httpPost('/criarSala', jsonInput, 'json', (data) => {
+      console.log("Data http post: ", data)
+      respostaServidorUser = data.status
+    }, (err) => console.log(err))
+  }
+
+  //Botao entrar sala
+  if (botaoEntrarSala.mouseIsHover() && paginaAtual == 1) {
+
+    //Dados do input e do usario 'logado'
+    let jsonInput = {
+      "idUserLogin": idUserLogin,
+      "nomeSala": salaInput.input.value()
+    }
+
+    //Enviar dados do input para o servidor
+    httpPost('/entrarSala', jsonInput, 'json', (data) => {
+      // console.log(data)
+      if (data.status == "Jogador com id entrou na sala com sucesso!") {
+        //Avançar para a proxima pagina
+        paginaAtual = 2
+        idSalaAtual = data.id_sala
+        console.log("O jogador entrou na sala: ", idSalaAtual)
+      } else {
+        respostaServidorUser = data.status
+      }
+    }, (err) => console.log(err))
+  }
+
+  //Botao iniciar partida
+  if (botaoEntrarPartida.mouseIsHover() && paginaAtual == 2){
+    if (qtdJogadores < 2){
+      respostaServidorUser = "A partida só pode começar com pelo menos dois jogadores!"
+    } else{
+      paginaAtual = 3
+    }
+
+    loop()
   }
 
 }

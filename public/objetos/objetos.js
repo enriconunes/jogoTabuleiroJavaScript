@@ -23,29 +23,30 @@ class Logo {
 
 class Botao {
 
-    constructor(posX, posY, largura, altura, cor) {
+    constructor(posX, posY, cor) {
         this.corPrimaria = cor;
         this.corVariante = cor;
         this.corHover = 0;
         this.posX = posX;
         this.posY = posY;
-        this.largura = largura;
-        this.altura = altura;
+        this.largura = 0;
+        this.altura = 0;
         this.larguraBorda = 2;
         this.corBorda = 255;
-        this.texto = "Testando"
+        this.texto = ""
     }
 
     desenhar_botao() {
 
         push()
 
-        if (this.mouseIsHover()) {
-            this.corVariante = this.corHover;
-            cursor(HAND);
-        } else {
-            this.corVariante = this.corPrimaria;
-        }
+        //Animacao do botao
+        // if (this.mouseIsHover()) {
+        //     this.corVariante = this.corHover;
+        //     cursor(HAND);
+        // } else {
+        //     this.corVariante = this.corPrimaria;
+        // }
 
         strokeWeight(this.larguraBorda);
         stroke(this.corBorda);
@@ -63,10 +64,10 @@ class Botao {
 
     }
 
-    mouseIsHover(){
-        if (isHover(this.posX - this.largura / 2, this.posX + this.largura / 2, this.posY - this.altura / 2, this.posY + this.altura / 2)){
+    mouseIsHover() {
+        if (isHover(this.posX - this.largura / 2, this.posX + this.largura / 2, this.posY - this.altura / 2, this.posY + this.altura / 2)) {
             return true
-        } else{
+        } else {
             return false
         }
     }
@@ -260,11 +261,11 @@ class Tabuleiro {
         if (width >= 1280) {
             //exibir o console na lateral
             rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
-        } else{
+        } else {
             //exibir o console embaixo
             rect(width / 2, height / 2 + this.altura / 1.25, this.largura * 0.25, this.altura * 0.25)
         }
-        
+
         //escrever a mensagem
         fill(255, 255, 255, 230)
         strokeWeight(0.5)
@@ -272,7 +273,7 @@ class Tabuleiro {
 
         if (width >= 1280) {
             text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
-        } else{
+        } else {
             text("CONSOLE", width / 2, height / 2 + this.altura / 1.35)
         }
 
@@ -280,12 +281,12 @@ class Tabuleiro {
         textSize(this.largura * 0.015)
         textAlign(CENTER, CENTER)
 
-        if (width >= 1280){
+        if (width >= 1280) {
             text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
-        } else{
+        } else {
             text(this.textoConsoleLateral, width / 2, height / 2 + this.altura / 1.23)
         }
-        
+
         pop()
     }
 }
@@ -356,7 +357,6 @@ class Jogador {
         this.posicaoCirculoY = ""
         this.circuloLargura = ""
         this.pontuacao = 100
-        this.jogouDado = ""
         this.estado = ""
     }
 
@@ -507,4 +507,33 @@ class Jogo {
         }
     }
 
+}
+
+class InputText {
+    constructor(posX, posY, largura, altura) {
+        this.posX = posX;
+        this.posY = posY;
+        this.largura = largura;
+        this.altura = altura;
+        this.textoLabel = "";
+        this.input = createInput('');
+        this.input.size(this.largura, this.altura);
+    }
+
+    desenhar_input(textoLabel) {
+        this.textoLabel = textoLabel;
+        this.input.position(this.posX, this.posY);
+        push();
+        textSize(this.largura * 0.04); //mudar
+        fill("white");
+        text(this.textoLabel, this.posX, this.posY - this.altura * 0.13);
+        pop();
+    }
+
+    destruir_input() {
+        if (this.input) {
+            this.input.remove();
+            this.input = null;
+        }
+    }
 }

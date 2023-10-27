@@ -132,10 +132,6 @@ function gerirTurno(qtdJogadores) {
     }
 }
 
-function confereChegada(jogo, listaJogadores){
-    //os jogadores possuem um atributo "finalizou"
-}
-
 //Desenhar todas as casas do jogo
 function desenharTodasAsCasas() {
 
@@ -183,23 +179,6 @@ function desenharTodasAsCasas() {
 
 }
 
-// function lerRespostaRotaPost(caminhoRota) {
-//     return fetch(caminhoRota, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     })
-//         .then(response => response.json())
-//         .then(data => {
-//             // 'data' contém a resposta JSON enviada pelo servidor
-//             return data;
-//         })
-//         .catch(error => {
-//             throw error;
-//         });
-// }
-
 function exibirTexto(texto, posicaoX, posicaoY, tamanho, cor){
     push()
     fill(cor)
@@ -207,4 +186,9 @@ function exibirTexto(texto, posicaoX, posicaoY, tamanho, cor){
     textSize(tamanho)
     text(texto, posicaoX, posicaoY)
     pop()
+}
+
+//Formatar a palavra - apenas a primeira letra em maiusculo
+function capitalizeFirstLetter(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
 }

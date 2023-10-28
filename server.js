@@ -91,7 +91,7 @@ app.post('/getEfetuarLogin', (req, res) => {
 
         if (resultado.length > 0) {
             if (resultado[0].pass == data.pass) {
-                res.status(200).json({ status: "Login efetuado!", id_user: resultado[0].id });
+                res.status(200).json({ status: "Login efetuado!", id_user: resultado[0].id, name_user: data.username });
             } else {
                 res.status(200).json({ status: "A senha está incorreta!" });
             }
@@ -158,16 +158,26 @@ app.post('/entrarSala', (req, resposta) => {
                             if (err) {
                                 throw err;
                             } else {
-                                resposta.status(200).json({ status: "Jogador com id entrou na sala com sucesso!", id_sala: resultado[0].id });
+
+                                //Apos entrar na sala, adicionar jogador na tabela dados_partida com suas informacoes
+                                let sqlInsert = `INSERT INTO dados_rodada (id_user, id_sala, num_atribuido, nome_user) VALUES (${data.idUserLogin}, ${resultado[0].id}, ${resultado[0].qtd_users + 1}, "${data.nomeUserLogin}");`
+
+                                db.query(sqlInsert, (err, res) => {
+                                    if (err) {
+                                        throw err;
+                                    } else {
+                                        resposta.status(200).json({ status: "Jogador entrou na sala com sucesso!", id_sala: resultado[0].id });
+                                    }
+                                })
                             }
                         })
                     } else {
-                        resposta.status(200).json({ status: "A sala já possui a quantidade máxima de jogadores!"});
+                        resposta.status(200).json({ status: "A sala já possui a quantidade máxima de jogadores!" });
                     }
-                } else{
-                    resposta.status(200).json({ status: "Esta sala está fechada!"});
+                } else {
+                    resposta.status(200).json({ status: "Esta sala está fechada!" });
                 }
-                
+
             } else {
                 resposta.status(200).json({ status: "Esta sala não existe!" });
             }
@@ -178,7 +188,11 @@ app.post('/entrarSala', (req, resposta) => {
 
 //Criar rota get com select da base de dados, essa rota será chamada na sketch
 app.get('/getBaseDadosPartida', (req, res) => {
-    let sql = "SELECT * FROM dados_rodada;"
+
+    //Valor passado como parametro na chamada da rota
+    let idSalaAtual = req.query.idSalaAtual;
+
+    let sql = `SELECT * FROM dados_rodada WHERE id_sala = ${idSalaAtual};`
     db.query(sql, (err, resultado) => {
         if (err) throw err;
         //console.log(res);

@@ -349,7 +349,8 @@ class Casa {
 class Jogador {
 
     constructor() {
-        this.numero = ""
+        this.numero = 0
+        this.nome = ""
         this.cor = ""
         this.tamanhoBase = ""
         this.posicao = 0

@@ -22,18 +22,11 @@ let qtdGirosDado;
 let paginaAtual = 0;
 let respostaServidorUser;
 let idUserLogin;
+let nomeUserLogin;
 let idSalaAtual;
 let qtdJogadores;
 
 function preload() {
-
-  // 'posicionamento' é o endpoint determinado no servidor
-  // este endpoint tem um res.send json, o json fica alojado em (data )
-  loadJSON('/getBaseDadosPartida', (data) => {
-    //vai receber os dados enviados pela rota 'getDataBase'
-    //sera recebido um array com todos os registos da base de dados com um json
-    console.log("Dados recebidos da base de dados: ", data)
-  })
 
   //Upload de imagens
   logoImg = loadImage("./imagens/logo.png")
@@ -72,17 +65,17 @@ function setup() {
     casa.push(casaTemp);
   }
 
-  //Definir a quantidade de jogadores
-  jogo.qtdJogadores = 4
+  // //Definir a quantidade de jogadores
+  // jogo.qtdJogadores = 3
 
-  //Instanciar objetos do tipo jogador
-  coresJogadores = ["red", "blue", "purple", "black"]
-  for (var i = 0; i < jogo.qtdJogadores; i++) {
-    var jogadorTemp = new Jogador();
-    jogadorTemp.numero = i + 1
-    jogadorTemp.cor = coresJogadores[i]
-    jogador.push(jogadorTemp);
-  }
+  // //Instanciar objetos do tipo jogador
+  // coresJogadores = ["red", "blue", "purple", "black"]
+  // for (var i = 0; i < jogo.qtdJogadores; i++) {
+  //   var jogadorTemp = new Jogador();
+  //   jogadorTemp.numero = i + 1
+  //   jogadorTemp.cor = coresJogadores[i]
+  //   jogador.push(jogadorTemp);
+  // }
 
   //Configuracoes das casas do tabuleiro
   configurarCasas()
@@ -175,7 +168,7 @@ function draw() {
     loadJSON(`/getListagemJogadoresSala?idSalaAtual=${idSalaAtual}`, (data) => {
 
       //Listagem dos nomes dos jogadores recebidos
-      for(let ctr = 0; ctr < data.length; ctr++){
+      for (let ctr = 0; ctr < data.length; ctr++) {
 
         let nomeFormatado = capitalizeFirstLetter(data[ctr].username);
 
@@ -199,6 +192,45 @@ function draw() {
 
   }
   else if (paginaAtual == 3) {
+
+    //Definir a quantidade de jogadores
+    //qtdJogadores é uma variavel global com valor atribuido ao chamar a rota /getListagemJogadoresSala
+    jogo.qtdJogadores = qtdJogadores
+
+    //Instanciar objetos do tipo jogador
+    //Armazenar cada jogador no array 'jogador'
+    coresJogadores = ["red", "blue", "purple", "black"]
+    for (var i = 0; i < jogo.qtdJogadores; i++) {
+      var jogadorTemp = new Jogador();
+      // jogadorTemp.numero = i + 1
+      jogadorTemp.cor = coresJogadores[i]
+      jogador.push(jogadorTemp);
+    }
+
+    loadJSON(`/getBaseDadosPartida?idSalaAtual=${idSalaAtual}`, (data) => {
+      //vai receber os dados enviados pela rota 'getDataBase'
+      //sera recebido um array com todos os registos da base de dados com um json
+      console.log("Dados recebidos da base de dados: ", data)
+      for (let x = 0; x < data.length; x++) {
+        console.log("---------------------")
+        console.log("ID user: ", data[x].id_user)
+        console.log("Num jogador: ", data[x].num_atribuido)
+        console.log("Nome jogador: ", data[x].nome_user)
+        console.log("Posicao: ", data[x].posicao)
+        console.log("Pontuacao: ", data[x].pontuacao)
+        console.log("Dado atual: ", data[x].dado_atual)
+        console.log("Turno atual: ", data[x].turno_atual)
+
+        jogador[x].numero = data[x].num_atribuido
+        jogador[x].nome = data[x].nome_user
+        jogador[x].posicao = data[x].posicao
+        jogador[x].pontuacao = data[x].pontuacao
+      }
+      
+    })
+
+    //Atribuir valores aos jogadores com dados da base de dados
+    console.log("JOGADORES INSTANCIADOS: ", jogador)
 
     //Desenhar tabuleiro
     tabuleiro.desenhar_tabuleiro()
@@ -279,6 +311,8 @@ function draw() {
       tabuleiro.exibir_placar(jogo)
 
     }
+
+    noLoop()
   }
 
   //Logo
@@ -414,6 +448,7 @@ function mousePressed() {
       if (data.status == "Login efetuado!") {
         paginaAtual = 1
         idUserLogin = data.id_user
+        nomeUserLogin = data.name_user
       } else {
         respostaServidorUser = data.status
       }
@@ -444,28 +479,31 @@ function mousePressed() {
     //Dados do input e do usario 'logado'
     let jsonInput = {
       "idUserLogin": idUserLogin,
+      "nomeUserLogin": nomeUserLogin,
       "nomeSala": salaInput.input.value()
     }
 
     //Enviar dados do input para o servidor
     httpPost('/entrarSala', jsonInput, 'json', (data) => {
       // console.log(data)
-      if (data.status == "Jogador com id entrou na sala com sucesso!") {
+      if (data.status == "Jogador entrou na sala com sucesso!") {
         //Avançar para a proxima pagina
         paginaAtual = 2
         idSalaAtual = data.id_sala
-        console.log("O jogador entrou na sala: ", idSalaAtual)
+        console.log("O jogador entrou na sala com ID ", idSalaAtual)
       } else {
         respostaServidorUser = data.status
       }
     }, (err) => console.log(err))
+
+    loop()
   }
 
   //Botao iniciar partida
-  if (botaoEntrarPartida.mouseIsHover() && paginaAtual == 2){
-    if (qtdJogadores < 2){
+  if (botaoEntrarPartida.mouseIsHover() && paginaAtual == 2) {
+    if (qtdJogadores < 2) {
       respostaServidorUser = "A partida só pode começar com pelo menos dois jogadores!"
-    } else{
+    } else {
       paginaAtual = 3
     }
 

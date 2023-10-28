@@ -25,6 +25,7 @@ let idUserLogin;
 let nomeUserLogin;
 let idSalaAtual;
 let qtdJogadores;
+let dadosCarregados = false
 
 function preload() {
 
@@ -65,17 +66,14 @@ function setup() {
     casa.push(casaTemp);
   }
 
-  // //Definir a quantidade de jogadores
-  // jogo.qtdJogadores = 3
-
-  // //Instanciar objetos do tipo jogador
-  // coresJogadores = ["red", "blue", "purple", "black"]
-  // for (var i = 0; i < jogo.qtdJogadores; i++) {
-  //   var jogadorTemp = new Jogador();
-  //   jogadorTemp.numero = i + 1
-  //   jogadorTemp.cor = coresJogadores[i]
-  //   jogador.push(jogadorTemp);
-  // }
+  //Instanciar 4 objetos do tipo jogador
+  coresJogadores = ["red", "blue", "purple", "black"]
+  for (var i = 0; i < 4; i++) {
+    var jogadorTemp = new Jogador();
+    jogadorTemp.numero = i + 1
+    jogadorTemp.cor = coresJogadores[i]
+    jogador.push(jogadorTemp);
+  }
 
   //Configuracoes das casas do tabuleiro
   configurarCasas()
@@ -101,6 +99,9 @@ function draw() {
 
   //Gerir a exibição de paginas
   if (paginaAtual == 0) {
+
+    frameRate(60)
+
     //Pagina inicial - Login e sigin
     //Desenhar tabuleiro
     tabuleiro.desenhar_tabuleiro()
@@ -152,6 +153,7 @@ function draw() {
 
     //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
     exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
+
   }
   else if (paginaAtual == 2) {
 
@@ -176,7 +178,7 @@ function draw() {
       }
 
       //Guardar a quantidade de jogadores da sala
-      qtdJogadores = data.length;
+      jogo.qtdJogadores = data.length;
 
     })
 
@@ -193,126 +195,119 @@ function draw() {
   }
   else if (paginaAtual == 3) {
 
-    //Definir a quantidade de jogadores
-    //qtdJogadores é uma variavel global com valor atribuido ao chamar a rota /getListagemJogadoresSala
-    jogo.qtdJogadores = qtdJogadores
-
-    //Instanciar objetos do tipo jogador
-    //Armazenar cada jogador no array 'jogador'
-    coresJogadores = ["red", "blue", "purple", "black"]
-    for (var i = 0; i < jogo.qtdJogadores; i++) {
-      var jogadorTemp = new Jogador();
-      // jogadorTemp.numero = i + 1
-      jogadorTemp.cor = coresJogadores[i]
-      jogador.push(jogadorTemp);
-    }
-
+    //Requisicao a cada 2 segundos para atualizar dados do tabuleiro
+    frameRate(0.5)
     loadJSON(`/getBaseDadosPartida?idSalaAtual=${idSalaAtual}`, (data) => {
       //vai receber os dados enviados pela rota 'getDataBase'
       //sera recebido um array com todos os registos da base de dados com um json
-      console.log("Dados recebidos da base de dados: ", data)
+      // console.log("Dados recebidos da base de dados: ", data)
       for (let x = 0; x < data.length; x++) {
         console.log("---------------------")
-        console.log("ID user: ", data[x].id_user)
-        console.log("Num jogador: ", data[x].num_atribuido)
-        console.log("Nome jogador: ", data[x].nome_user)
-        console.log("Posicao: ", data[x].posicao)
-        console.log("Pontuacao: ", data[x].pontuacao)
-        console.log("Dado atual: ", data[x].dado_atual)
-        console.log("Turno atual: ", data[x].turno_atual)
+        // console.log("ID user: ", data[x].id_user)
+        // console.log("Num jogador: ", data[x].num_atribuido)
+        // console.log("Nome jogador: ", data[x].nome_user)
+        // console.log("Posicao: ", data[x].posicao)
+        // console.log("Pontuacao: ", data[x].pontuacao)
+        // console.log("Dado atual: ", data[x].dado_atual)
+        // console.log("Turno atual: ", data[x].turno_atual)
 
         jogador[x].numero = data[x].num_atribuido
         jogador[x].nome = data[x].nome_user
         jogador[x].posicao = data[x].posicao
         jogador[x].pontuacao = data[x].pontuacao
+
+        //Variavel que inicia em falso e so passa a ser true quando o load é finalizado
+        dadosCarregados = true
       }
-      
+
     })
 
-    //Atribuir valores aos jogadores com dados da base de dados
-    console.log("JOGADORES INSTANCIADOS: ", jogador)
+    //So exibe o tabuleiro depois que o primeiro load for finalizado
+    if (dadosCarregados) {
+      //Atribuir valores aos jogadores com dados da base de dados
+      console.log("JOGADORES INSTANCIADOS: ", jogador)
 
-    //Desenhar tabuleiro
-    tabuleiro.desenhar_tabuleiro()
-
-    //Desenhar casas do tabeuleiro
-    desenharTodasAsCasas()
-
-    //Se for true, o dado atual sera usado para jogar o desafio ou o duelo - inicia em falso
-    ativarDadoDesafio = false
-    ativarDadoDuelo = false
-
-    //Desenhar jogadores na ordem do ultimo ao primeiro
-    for (let n = jogo.qtdJogadores; n > 0; n--) {
-      jogador[n - 1].desenhar_jogador(casa[jogador[n - 1].posicao])
-    }
-
-    //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
-    if (jogador[turnoJogador - 1].posicao == 46) {
-      gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-    }
-
-    //Desenhar dado
-    switch (retornoGirardado) {
-      case (1):
-        dado.imagem = imagemDadoUm
-        break;
-      case (2):
-        dado.imagem = imagemDadoDois
-        break;
-      case (3):
-        dado.imagem = imagemDadoTres
-        break;
-      case (4):
-        dado.imagem = imagemDadoQuatro
-        break;
-      case (5):
-        dado.imagem = imagemDadoCinco
-        break;
-      case (6):
-        dado.imagem = imagemDadoSeis
-        break;
-    }
-
-    //Botao configuracao
-    botaoConfig.desenhar_botao()
-
-    //Definicoes imagem
-    image(definicoesImg, 55, 45, 30, 30);
-
-    //Mostrar indicador do jogador atual
-    jogador[turnoJogador - 1].exibir_indicador_turno()
-
-    //Exibir caixa de desafio e altera a imagem do dado caso haja um desafio aberto
-    if (desafioAberto) {
-      tabuleiro.exibir_desafio(jogador[turnoJogador - 1], casa[jogador[turnoJogador - 1].posicao])
-      ativarDadoDesafio = true
-    }
-
-    //Exibir caixa de duelo e altera a imagem do dado caso haja um duelo aberto
-    if (dueloAberto) {
-      tabuleiro.exibir_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada])
-      ativarDadoDuelo = true
-    }
-
-    if (!jogo.confere_terminou()) {
-
-      //Desenhar o dado se o jogo nao tiver terminado
-      dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
-
-      //Exibir console com informacoes da partida
-      tabuleiro.exibir_console(turnoJogador)
-      tabuleiro.exibir_console_lateral()
-
-    } else {
-
-      //Caso o jogo tenha acabado, "limpa" o tabueleiro e exibe o placar
+      //Desenhar tabuleiro
       tabuleiro.desenhar_tabuleiro()
-      tabuleiro.exibir_placar(jogo)
 
+      //Desenhar casas do tabeuleiro
+      desenharTodasAsCasas()
+
+      //Se for true, o dado atual sera usado para jogar o desafio ou o duelo - inicia em falso
+      ativarDadoDesafio = false
+      ativarDadoDuelo = false
+
+      //Desenhar jogadores na ordem do ultimo ao primeiro
+      for (let n = jogo.qtdJogadores; n > 0; n--) {
+        jogador[n - 1].desenhar_jogador(casa[jogador[n - 1].posicao])
+      }
+
+      //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
+      if (jogador[turnoJogador - 1].posicao == 46) {
+        gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+      }
+
+      //Desenhar dado
+      switch (retornoGirardado) {
+        case (1):
+          dado.imagem = imagemDadoUm
+          break;
+        case (2):
+          dado.imagem = imagemDadoDois
+          break;
+        case (3):
+          dado.imagem = imagemDadoTres
+          break;
+        case (4):
+          dado.imagem = imagemDadoQuatro
+          break;
+        case (5):
+          dado.imagem = imagemDadoCinco
+          break;
+        case (6):
+          dado.imagem = imagemDadoSeis
+          break;
+      }
+
+      //Botao configuracao
+      botaoConfig.desenhar_botao()
+
+      //Definicoes imagem
+      image(definicoesImg, 55, 45, 30, 30);
+
+      //Mostrar indicador do jogador atual
+      jogador[turnoJogador - 1].exibir_indicador_turno()
+
+      //Exibir caixa de desafio e altera a imagem do dado caso haja um desafio aberto
+      if (desafioAberto) {
+        tabuleiro.exibir_desafio(jogador[turnoJogador - 1], casa[jogador[turnoJogador - 1].posicao])
+        ativarDadoDesafio = true
+      }
+
+      //Exibir caixa de duelo e altera a imagem do dado caso haja um duelo aberto
+      if (dueloAberto) {
+        tabuleiro.exibir_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada])
+        ativarDadoDuelo = true
+      }
+
+      if (!jogo.confere_terminou()) {
+
+        //Desenhar o dado se o jogo nao tiver terminado
+        dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
+
+        //Exibir console com informacoes da partida
+        tabuleiro.exibir_console(turnoJogador)
+        tabuleiro.exibir_console_lateral()
+
+      } else {
+
+        //Caso o jogo tenha acabado, "limpa" o tabueleiro e exibe o placar
+        tabuleiro.desenhar_tabuleiro()
+        tabuleiro.exibir_placar(jogo)
+
+      }
     }
 
-    noLoop()
   }
 
   //Logo
@@ -398,15 +393,16 @@ function mousePressed() {
 
     // Enviar dados para o servidor
     let dadosRodada = {
-      "jogador": jogador[turnoJogador - 1].numero,
-      "posicao": jogador[turnoJogador - 1].posicao,
-      "pontuacao": jogador[turnoJogador - 1].pontuacao,
+      // "jogador": jogador[turnoJogador - 1].numero,
+      // "posicao": jogador[turnoJogador - 1].posicao,
+      // "pontuacao": jogador[turnoJogador - 1].pontuacao,
       "dadoAtual": retornoGirardado,
-      "turnoJogador": turnoJogador,
+      // "turnoJogador": turnoJogador,
+      "idSalaAtual": idSalaAtual
     }
 
     //POST AULA TEORICA
-    httpPost('/enviarDados', dadosRodada, 'json', (data) => {
+    httpPost('/updadeDadosPartida', dadosRodada, 'json', (data) => {
       console.log(data)
     }, (err) => console.log(err))
   }
@@ -431,6 +427,7 @@ function mousePressed() {
       respostaServidorUser = data.status
     }, (err) => console.log(err))
 
+    loop()
   }
 
   //Botao entrar na conta
@@ -454,6 +451,8 @@ function mousePressed() {
       }
     }, (err) => console.log(err))
 
+    loop()
+
   }
 
   //Botao criar sala
@@ -471,6 +470,8 @@ function mousePressed() {
       console.log("Data http post: ", data)
       respostaServidorUser = data.status
     }, (err) => console.log(err))
+
+    loop()
   }
 
   //Botao entrar sala
@@ -495,13 +496,11 @@ function mousePressed() {
         respostaServidorUser = data.status
       }
     }, (err) => console.log(err))
-
-    loop()
   }
 
   //Botao iniciar partida
   if (botaoEntrarPartida.mouseIsHover() && paginaAtual == 2) {
-    if (qtdJogadores < 2) {
+    if (jogo.qtdJogadores < 2) {
       respostaServidorUser = "A partida só pode começar com pelo menos dois jogadores!"
     } else {
       paginaAtual = 3

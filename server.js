@@ -30,23 +30,18 @@ db.connect((err) => {
 
 app.use(express.static('public'))
 
-//Rotas para envio de dados para a base de dados
-//Salvar dados da partida
-app.post('/enviarDados', async (req, res) => {
+//Atualizar dados da partida no banco de dados
+app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    let sql = `INSERT INTO dados_rodada (jogador, posicao, pontuacao, dadoAtual, turnoJogador) VALUES (${data.jogador}, ${data.posicao}, ${data.pontuacao}, ${data.dadoAtual}, ${data.turnoJogador});`
-
-    db.query(sql, function (err) {
+    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual} WHERE id_sala = "${data.idSalaAtual}";`
+    db.query(sqlUpdate, (err, res) => {
         if (err) {
-            console.log("Erro ao salvar na base de dados: ", err)
             throw err;
         } else {
-            console.log("Dados salvos na base de dados: ", req.body);
+            resposta.status(200).json({status: "Update feito com sucesso!"});
         }
-    });
-
-    res.status(200).json({ ok: 200 })
+    })
 })
 
 //Rota criar nova conta - salvar banco de dados

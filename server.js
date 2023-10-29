@@ -145,7 +145,6 @@ app.post('/entrarSala', (req, resposta) => {
     let sql = `SELECT * FROM sala WHERE nome = "${data.nomeSala}";`
     db.query(sql, (err, resultado) => {
         if (err) {
-            // res.status(500).json({ status: "Erro no servidor ao verificar a sala." });
             throw err;
         } else {
 
@@ -153,7 +152,7 @@ app.post('/entrarSala', (req, resposta) => {
             if (resultado.length > 0) {
 
                 //Conferir se a sala está aberta
-                if (resultado[0].estado == true) {
+                if (resultado[0].estado == "aberta") {
                     if (resultado[0].qtd_users < 4) {
 
                         //Se a sala tiver menos de 4 jogadores, entao insere o jogador na tabela da sala na coluna correta
@@ -179,7 +178,10 @@ app.post('/entrarSala', (req, resposta) => {
                     } else {
                         resposta.status(200).json({ status: "A sala já possui a quantidade máxima de jogadores!" });
                     }
-                } else {
+                }
+                else if (resultado[0].estado == "iniciada"){
+                    resposta.status(200).json({ status: "A partida desta sala já iniciou!" });
+                } else{
                     resposta.status(200).json({ status: "Esta sala está fechada!" });
                 }
 
@@ -226,6 +228,21 @@ app.get('/getListagemJogadoresSala', (req, res) => {
             // console.log("RESULTADO TABELA USERS:\n", resultado);
             res.send(resultado)
         })
+    })
+})
+
+//Update do estado da sala, passar de 'aberta' para 'inicializada'
+app.post('/updateEstadoSala', (req, res) => {
+
+    const data = req.body;
+
+    let sqlUpdate = `UPDATE sala SET estado = "iniciada" WHERE id = "${data.idSalaAtual}";`
+
+    db.query(sqlUpdate, (err, resultado) => {
+        if (err) throw err;
+
+        res.status(200).json({ status: "Estado da sala alterado para iniciado!"});
+
     })
 })
 

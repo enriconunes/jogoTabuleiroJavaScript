@@ -522,6 +522,24 @@ function mousePressed() {
       respostaServidorUser = "A partida só pode começar com pelo menos dois jogadores!"
     } else {
       paginaAtual = 3
+
+      let jsonSalaId = {
+        "idSalaAtual": idSalaAtual
+      }
+
+      //Update do estado da sala, passar de 'aberta' para 'inicializada'
+      httpPost('/updateEstadoSala', jsonSalaId, 'json', (data) => {
+        // console.log(data)
+        if (data.status == "Jogador entrou na sala com sucesso!") {
+          //Avançar para a proxima pagina
+          paginaAtual = 2
+          idSalaAtual = data.id_sala
+          console.log("O jogador entrou na sala com ID ", idSalaAtual)
+        } else {
+          respostaServidorUser = data.status
+        }
+      }, (err) => console.log(err))
+
     }
 
     loop()

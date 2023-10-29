@@ -12,7 +12,6 @@ let casa = [];
 let jogador = [];
 let coresJogadores = [];
 let turnoJogador;
-let turnoJogadorDB;
 let desafioAberto;
 let ativarDadoDesafio;
 let dueloAberto;
@@ -198,7 +197,7 @@ function draw() {
   else if (paginaAtual == 3) {
 
     //Requisicao a cada 1 segundo para atualizar dados do tabuleiro
-    frameRate(1)
+    frameRate(1.5)
     loadJSON(`/getBaseDadosPartida?idSalaAtual=${idSalaAtual}`, (data) => {
       //vai receber os dados enviados pela rota 'getDataBase'
       //sera recebido um array com todos os registos da base de dados com um json
@@ -218,6 +217,7 @@ function draw() {
         jogador[x].pontuacao = data[x].pontuacao
         turnoJogador = data[x].turno_atual
         retornoGirardado = data[x].dado_atual
+        tabuleiro.textoConsoleLateral = data[x].mensagem_console
 
         // Identificar o numero do jogador que fez o login
         // Numero para a gestao de turnos
@@ -233,8 +233,6 @@ function draw() {
 
     //So exibe o tabuleiro depois que o primeiro load for finalizado
     if (dadosCarregados) {
-      //Atribuir valores aos jogadores com dados da base de dados
-      // console.log("JOGADORES INSTANCIADOS: ", jogador)
       console.log("VOCE É O JOGADOR NUMERO: ", numeroJogadorLogado)
 
       //Desenhar tabuleiro
@@ -331,6 +329,8 @@ function mousePressed() {
   //Confere se o mouse está em cima do dado e se o jogo ainda nao terminou para executar as ações
   if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
 
+    console.log("TURNO NO MOMENTO DO CLICK: ", turnoJogador)
+
     // Confere se é o turno do jogador logado para ele lançar o dado
     if (numeroJogadorLogado == turnoJogador) {
       //Move o jogador e confere se a casa que ele caiu é um desafio
@@ -373,12 +373,9 @@ function mousePressed() {
           let retornoGirarDadoDesafio = dado.girar_dado()
           casa[jogador[turnoJogador - 1].posicao].resolver_desafio(jogador[turnoJogador - 1], retornoGirarDadoDesafio, tabuleiro)
           gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-          //Salvar turno atual para a base de dados
-          pontuacao = turnoJogador;
 
           //alterar a imagem do dado
           retornoGirardado = retornoGirarDadoDesafio
-          console.log("JOGADOR ", numeroJogadorLogado, " ATIVOU O DADO")
         }
       }
       else if (dueloAberto) {
@@ -398,16 +395,12 @@ function mousePressed() {
 
           if (!qtdGirosDado >= 1) {
             gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-            //Salvar turno atual para a base de dados
-            turnoJogadorDB = turnoJogador;
           }
         }
       }
       else {
         //Só passa a vez para o proximo jogador se nao for um desafio ou se nao for um duelo
         gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-        //Salvar turno atual para a base de dados
-        turnoJogadorDB = turnoJogador;
       }
 
       // Enviar dados para o servidor
@@ -416,9 +409,12 @@ function mousePressed() {
         "posicao": jogador[numeroJogadorLogado - 1].posicao,
         "pontuacao": jogador[numeroJogadorLogado - 1].pontuacao,
         "dadoAtual": retornoGirardado,
-        "turno_atual": turnoJogadorDB,
-        "idSalaAtual": idSalaAtual
+        "turno_atual": turnoJogador,
+        "idSalaAtual": idSalaAtual,
+        "mensagem_console": tabuleiro.textoConsoleLateral
       }
+
+      console.log("TURNO ENVIADO PARA A BASE DE DADOS: ", turnoJogador)
 
       //POST AULA TEORICA
       httpPost('/updadeDadosPartida', dadosRodada, 'json', (data) => {

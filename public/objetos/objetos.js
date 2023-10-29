@@ -94,11 +94,11 @@ class Dado {
 
         image(this.imagem, this.posicaoX, this.posicaoY, this.tamanho, this.tamanho);
 
-        let dadoHover = isHover(this.posicaoX, this.posicaoX + this.tamanho, this.posicaoY, this.posicaoY + this.tamanho);
+        // let dadoHover = isHover(this.posicaoX, this.posicaoX + this.tamanho, this.posicaoY, this.posicaoY + this.tamanho);
 
-        if (dadoHover) {
-            cursor(HAND)
-        }
+        // if (dadoHover) {
+        //     cursor(HAND)
+        // }
 
         pop()
     }

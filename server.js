@@ -34,12 +34,22 @@ app.use(express.static('public'))
 app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual} WHERE id_sala = "${data.idSalaAtual}";`
+    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual} WHERE id_sala = "${data.idSalaAtual}";`
     db.query(sqlUpdate, (err, res) => {
         if (err) {
             throw err;
         } else {
-            resposta.status(200).json({status: "Update feito com sucesso!"});
+            //Apos fazer update do valor do dado e do turno,
+            //Atualizar tambem os dados do jogador
+            let sqlUpdateJogador = `UPDATE dados_rodada SET posicao = ${data.posicao}, pontuacao = ${data.pontuacao} WHERE id_sala = ${data.idSalaAtual} AND num_atribuido = ${data.numeroJogadorLogado};`
+
+            db.query(sqlUpdateJogador, (err, res) => {
+                if (err) {
+                    throw err;
+                } else{
+                    resposta.status(200).json({ status: "Update feito com sucesso!" });
+                }
+            })       
         }
     })
 })

@@ -34,7 +34,7 @@ app.use(express.static('public'))
 app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}" WHERE id_sala = "${data.idSalaAtual}";`
+    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio} WHERE id_sala = "${data.idSalaAtual}";`
     db.query(sqlUpdate, (err, res) => {
         if (err) {
             throw err;
@@ -47,7 +47,29 @@ app.post('/updadeDadosPartida', async (req, resposta) => {
                 if (err) {
                     throw err;
                 } else{
+
+                    //Apos fazer update dos valores do jogador logado, atualizar valor da posicao do oponente do duelo
+                    //Se nao fizer esse update, a posicao so é alterada no jogo do jogador logado e nao será salvo na DB
+                    //Ao fazer uma nova requisicao dos dados, ele terá o valor anterior (nao terá se movido)
+                    let sqlUpdateJogadorDuelado = `UPDATE dados_rodada SET posicao = ${data.jogadorCasaOcupadaNovaPosicao} WHERE id_sala = ${data.idSalaAtual} AND num_atribuido = ${data.jogadorCasaOcupada + 1};`
+
+                    db.query(sqlUpdateJogadorDuelado, (err, res) => {
+                        if (err){
+                            throw err;
+                        }
+                    })
+
+                    //atualizar valor do jogador que iniciou o duelo
+                    let sqlUpdateJogadorDesafiador = `UPDATE dados_rodada SET posicao = ${data.jogadorDesafiadorNovaPosicao} WHERE id_sala = ${data.idSalaAtual} AND num_atribuido = ${data.jogadorDesafiador+1};`
+
+                    db.query(sqlUpdateJogadorDesafiador, (err, res) => {
+                        if (err) {
+                            throw err;
+                        }
+                    })
+
                     resposta.status(200).json({ status: "Update feito com sucesso!" });
+   
                 }
             })       
         }

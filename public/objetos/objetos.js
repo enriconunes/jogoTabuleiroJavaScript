@@ -462,6 +462,8 @@ class Jogador {
 
     resolver_duelo(jogadorTurnoAtual, jogadorCasaOcupada, valorDado1, valorDado2, tabuleiro) {
 
+        jogadorDesafiador = jogadorTurnoAtual.numero - 1
+
         if (qtdGirosDado < 1) {
             qtdGirosDado++
         } else {
@@ -481,6 +483,9 @@ class Jogador {
                 jogadorTurnoAtual.posicao = 0
                 tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o duelo\npor ${valorDado2} a ${valorDado1} e o jogador ${jogadorTurnoAtual.numero} voltou\nao início.`
             }
+
+            //Resetar valor da variavel apos o duelo ser finalizado
+            jogadorCasaOcupada = 'undefined'
 
         }
     }

@@ -17,6 +17,7 @@ let ativarDadoDesafio;
 let dueloAberto;
 let ativarDadoDuelo;
 let jogadorCasaOcupada;
+let jogadorDesafiador;
 let valoresDadoDuelo = [];
 let qtdGirosDado;
 let paginaAtual = 0;
@@ -218,6 +219,11 @@ function draw() {
         turnoJogador = data[x].turno_atual
         retornoGirardado = data[x].dado_atual
         tabuleiro.textoConsoleLateral = data[x].mensagem_console
+        desafioAberto = data[x].desafio_aberto
+        dueloAberto = data[x].duelo_aberto
+        jogadorCasaOcupada = data[x].jogador_duelado
+        qtdGirosDado = data[x].qtd_giros_dado_duelo
+        jogadorDesafiador = data[x].jogador_desafiador
 
         // Identificar o numero do jogador que fez o login
         // Numero para a gestao de turnos
@@ -277,12 +283,6 @@ function draw() {
           break;
       }
 
-      //Botao configuracao
-      botaoConfig.desenhar_botao()
-
-      //Definicoes imagem
-      image(definicoesImg, 55, 45, 30, 30);
-
       //Mostrar indicador do jogador atual
       jogador[turnoJogador - 1].exibir_indicador_turno()
 
@@ -329,10 +329,8 @@ function mousePressed() {
   //Confere se o mouse está em cima do dado e se o jogo ainda nao terminou para executar as ações
   if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
 
-    console.log("TURNO NO MOMENTO DO CLICK: ", turnoJogador)
-
     // Confere se é o turno do jogador logado para ele lançar o dado
-    if (numeroJogadorLogado == turnoJogador) {
+    if (numeroJogadorLogado == turnoJogador || dueloAberto) {
       //Move o jogador e confere se a casa que ele caiu é um desafio
       if (!dueloAberto) {
         retornoGirardado = dado.girar_dado()
@@ -386,7 +384,7 @@ function mousePressed() {
           //Guarda os valores dos 2 dados
           valoresDadoDuelo[qtdGirosDado] = retornoGirarDadoDuelo // varia entre [0] e [1]
 
-          jogador[turnoJogador - 1].resolver_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada], valoresDadoDuelo[0], valoresDadoDuelo[1], tabuleiro)
+          jogador[turnoJogador - 1].resolver_duelo(jogador[turnoJogador - 1], jogador[jogadorCasaOcupada], valoresDadoDuelo[qtdGirosDado], valoresDadoDuelo[qtdGirosDado], tabuleiro)
 
           //alterar a imagem do dado
           retornoGirardado = retornoGirarDadoDuelo
@@ -411,10 +409,18 @@ function mousePressed() {
         "dadoAtual": retornoGirardado,
         "turno_atual": turnoJogador,
         "idSalaAtual": idSalaAtual,
-        "mensagem_console": tabuleiro.textoConsoleLateral
+        "mensagem_console": tabuleiro.textoConsoleLateral,
+        "desafio_aberto": desafioAberto,
+        "duelo_aberto": dueloAberto,
+        "jogadorCasaOcupada": jogadorCasaOcupada,
+        "jogadorCasaOcupadaNovaPosicao": jogador[jogadorCasaOcupada].posicao,
+        "jogadorDesafiador": jogadorDesafiador,
+        "jogadorDesafiadorNovaPosicao": jogador[jogadorDesafiador].posicao,
+        "qtdGirosDadoDesafio": qtdGirosDado
       }
 
-      console.log("TURNO ENVIADO PARA A BASE DE DADOS: ", turnoJogador)
+      console.log("JOGADOR CASA OCUPADA: ", jogador[jogadorCasaOcupada])
+      console.log("JOGADOR DESAFIADOR: ", jogador[jogadorDesafiador])
 
       //POST AULA TEORICA
       httpPost('/updadeDadosPartida', dadosRodada, 'json', (data) => {
@@ -425,7 +431,7 @@ function mousePressed() {
     }
   }
 
-  //Acoes pagina inicial
+  //Acoes paginas iniciais
   //Botao criar conta
   if (botaoCriarConta.mouseIsHover() && paginaAtual == 0) {
 

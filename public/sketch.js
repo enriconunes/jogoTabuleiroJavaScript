@@ -1,3 +1,4 @@
+//Definicao de variaveis globais
 let logoImg;
 let imagemDadoUm;
 let imagemDadoDois;
@@ -28,6 +29,8 @@ let idSalaAtual;
 let qtdJogadores;
 let dadosCarregados = false;
 let numeroJogadorLogado;
+let jogoTerminou = false;
+let qtdFinalistas;
 
 function preload() {
 
@@ -159,7 +162,7 @@ function draw() {
   }
   else if (paginaAtual == 2) {
 
-    frameRate(3)
+    frameRate(1)
 
     //Remover input da pagina anterior
     salaInput.destruir_input()
@@ -204,13 +207,6 @@ function draw() {
       //sera recebido um array com todos os registos da base de dados com um json
       // console.log("Dados recebidos da base de dados: ", data)
       for (let x = 0; x < data.length; x++) {
-        // console.log("ID user: ", data[x].id_user)
-        // console.log("Num jogador: ", data[x].num_atribuido)
-        // console.log("Nome jogador: ", data[x].nome_user)
-        // console.log("Posicao: ", data[x].posicao)
-        // console.log("Pontuacao: ", data[x].pontuacao)
-        // console.log("Dado atual: ", data[x].dado_atual)
-        // console.log("Turno atual: ", data[x].turno_atual)
 
         jogador[x].numero = data[x].num_atribuido
         jogador[x].nome = data[x].nome_user
@@ -224,6 +220,11 @@ function draw() {
         jogadorCasaOcupada = data[x].jogador_duelado
         qtdGirosDado = data[x].qtd_giros_dado_duelo
         jogadorDesafiador = data[x].jogador_desafiador
+        jogoTerminou = data[x].terminou
+        qtdFinalistas = data[x].qtd_finalistas
+
+        jogo.ordemChegada = data[x].lista_chegada.split(',').map(item => parseInt(item.trim()));
+
 
         // Identificar o numero do jogador que fez o login
         // Numero para a gestao de turnos
@@ -241,6 +242,8 @@ function draw() {
     if (dadosCarregados) {
       console.log("VOCE É O JOGADOR NUMERO: ", numeroJogadorLogado)
 
+      console.log("LISTA RECEBIDA PELO SERVIDOR: ", jogo.ordemChegada)
+
       //Desenhar tabuleiro
       tabuleiro.desenhar_tabuleiro()
 
@@ -256,10 +259,10 @@ function draw() {
         jogador[n - 1].desenhar_jogador(casa[jogador[n - 1].posicao])
       }
 
-      //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
-      if (jogador[turnoJogador - 1].posicao == 46) {
-        gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-      }
+      // //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
+      // if (jogador[turnoJogador - 1].posicao == 46) {
+      //   gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+      // }
 
       //Desenhar dado
       switch (retornoGirardado) {
@@ -298,20 +301,21 @@ function draw() {
         ativarDadoDuelo = true
       }
 
-      if (!jogo.confere_terminou()) {
+      if (!jogoTerminou) {
 
         //Desenhar o dado se o jogo nao tiver terminado
         dado.desenhar_dado(tabuleiro.largura, tabuleiro.altura);
 
         //Exibir console com informacoes da partida
-        tabuleiro.exibir_console(turnoJogador)
+        tabuleiro.exibir_console(turnoJogador, capitalizeFirstLetter(jogador[turnoJogador - 1].nome))
         tabuleiro.exibir_console_lateral()
+        tabuleiro.exibir_lista_jogadores(jogador, jogo.qtdJogadores)
 
       } else {
 
         //Caso o jogo tenha acabado, "limpa" o tabueleiro e exibe o placar
         tabuleiro.desenhar_tabuleiro()
-        tabuleiro.exibir_placar(jogo)
+        tabuleiro.exibir_placar(jogo, jogador)
 
       }
     }
@@ -320,14 +324,13 @@ function draw() {
 
   //Logo
   logo.desenhar_logo(tabuleiro);
-
 }
 
 function mousePressed() {
 
   //Acoes do dado
   //Confere se o mouse está em cima do dado e se o jogo ainda nao terminou para executar as ações
-  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogo.confere_terminou()) {
+  if (isHover(dado.posicaoX, dado.posicaoX + dado.tamanho, dado.posicaoY, dado.posicaoY + dado.tamanho) && !jogoTerminou) {
 
     // Confere se é o turno do jogador logado para ele lançar o dado
     if (numeroJogadorLogado == turnoJogador || dueloAberto) {
@@ -363,6 +366,7 @@ function mousePressed() {
       if (jogador[turnoJogador - 1].posicao == 46) {
         console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
         jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
+        qtdFinalistas += 1
       }
 
       if (desafioAberto) {
@@ -401,6 +405,14 @@ function mousePressed() {
         gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
       }
 
+      //Confere se o jogo terminou e envia o resultado para a DB
+      jogo.confere_terminou()
+
+      //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
+      if (jogador[turnoJogador - 1].posicao == 46) {
+        gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
+      }
+
       // Enviar dados para o servidor
       let dadosRodada = {
         "numeroJogadorLogado": numeroJogadorLogado,
@@ -416,13 +428,14 @@ function mousePressed() {
         "jogadorCasaOcupadaNovaPosicao": jogador[jogadorCasaOcupada].posicao,
         "jogadorDesafiador": jogadorDesafiador,
         "jogadorDesafiadorNovaPosicao": jogador[jogadorDesafiador].posicao,
-        "qtdGirosDadoDesafio": qtdGirosDado
+        "qtdGirosDadoDesafio": qtdGirosDado,
+        "jogoTerminou": jogoTerminou,
+        "qtdFinalistas": qtdFinalistas,
+        "listaOrdemChegada": jogo.ordemChegada
       }
 
-      console.log("JOGADOR CASA OCUPADA: ", jogador[jogadorCasaOcupada])
-      console.log("JOGADOR DESAFIADOR: ", jogador[jogadorDesafiador])
+      console.log("LISTA ENVIADA PARA O SERVIDOR: ", jogo.ordemChegada)
 
-      //POST AULA TEORICA
       httpPost('/updadeDadosPartida', dadosRodada, 'json', (data) => {
         console.log(data)
       }, (err) => console.log(err))

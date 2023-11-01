@@ -167,7 +167,7 @@ class Tabuleiro {
         pop()
     }
 
-    exibir_console(turno) {
+    exibir_console(turno, nomeJogador) {
         push()
         //desenhar quadro com o desafio
         fill("#185c37")
@@ -177,20 +177,20 @@ class Tabuleiro {
         rect(width / 2, height / 2 + this.altura / 1.7, this.largura * 0.8, this.altura * 0.1)
 
         //escrever a mensagem
-        let textoDesafio = `Vez do jogador ${turno}`
+        let textoConsole = `Vez do jogador ${turno} - ${nomeJogador}`
         fill(255, 255, 255, 230)
         strokeWeight(0)
         textSize(this.largura * 0.02)
         textAlign(CENTER, CENTER)
-        text(textoDesafio, width / 2, height / 2 + this.altura / 1.7)
+        text(textoConsole, width / 2, height / 2 + this.altura / 1.7)
         pop()
     }
 
-    exibir_placar(configuracoesJogo) {
+    exibir_placar(configuracoesJogo, jogador) {
         push()
 
         rectMode(CENTER)
-        fill("#393993")
+        fill(0)
         stroke(255)
         strokeWeight(2)
 
@@ -202,13 +202,13 @@ class Tabuleiro {
         textAlign(CENTER, CENTER)
 
         textSize(this.largura * 0.03)
-        text("ORDEM DE CHEGADA:", width / 2, height / 2 - this.largura * 0.05)
+        text("ORDEM DE CHEGADA:", width / 2, height / 2 - this.largura * 0.07)
 
         textSize(this.largura * 0.025)
-        for (let n = 0; n < configuracoesJogo.qtdJogadores - 1; n++) {
-            let texto = `${n + 1}º.     Pontuação: ${configuracoesJogo.ordemChegada[n].pontuacao}`
-            text(texto, width / 2, height / 2 + this.largura * 0.055 * n)
-            configuracoesJogo.ordemChegada[n].desenhar_jogador_placar(this, width / 2 - this.largura * 0.065, height / 2 - this.largura * 0.01 + this.largura * 0.055 * n)
+        for (let n = 1; n <= configuracoesJogo.qtdJogadores - 1; n++) {
+            let texto = `${n}º.     Pontuação: ${jogador[configuracoesJogo.ordemChegada[n] - 1].pontuacao}`
+            text(texto, width / 2, height / 2 - this.largura * 0.06 + this.largura * 0.055 * n)
+            jogador[configuracoesJogo.ordemChegada[n] - 1].desenhar_jogador_placar(this, width / 2 - this.largura * 0.065, height / 2 - this.largura * 0.07 + this.largura * 0.055 * n)
         }
 
         pop()
@@ -285,6 +285,35 @@ class Tabuleiro {
             text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
         } else {
             text(this.textoConsoleLateral, width / 2, height / 2 + this.altura / 1.23)
+        }
+
+        pop()
+    }
+
+    exibir_lista_jogadores(jogador, quantidade_jogadores){
+
+        push()
+        //desenhar quadro com lista dos jogadores
+        fill("#185c37")
+        stroke(255)
+        strokeWeight(this.larguraBorda)
+        rectMode(CENTER)
+
+        rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.83 / 2, this.largura * 0.25, this.altura * 0.25)
+
+        fill(255, 255, 255, 230)
+        strokeWeight(0.5)
+        textSize(this.largura * 0.018)
+
+        text("JOGADORES", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.7 / 2)
+
+        strokeWeight(0)
+        textSize(this.largura * 0.015)
+        textAlign(CENTER, CENTER)
+
+        //listagem
+        for(let x = 0; x < quantidade_jogadores; x++){
+            text(jogador[x].numero + "º. " + jogador[x].nome, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * x)
         }
 
         pop()
@@ -500,16 +529,16 @@ class Jogo {
     }
 
     adicionar_jogador_lista_chegada(jogador) {
-        if (!this.ordemChegada.includes(jogador)) {
-            this.ordemChegada.push(jogador)
+        if (!this.ordemChegada.includes(jogador.numero)) {
+            this.ordemChegada.push(jogador.numero)
         }
     }
 
     confere_terminou() {
-        if (this.ordemChegada.length == this.qtdJogadores - 1) {
-            return true;
+        if (this.ordemChegada.length == this.qtdJogadores) {
+            jogoTerminou = true;
         } else {
-            return false;
+            jogoTerminou = false;
         }
     }
 

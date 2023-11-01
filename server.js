@@ -34,7 +34,9 @@ app.use(express.static('public'))
 app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio} WHERE id_sala = "${data.idSalaAtual}";`
+    console.log("VALOR RECEBIDO DA LISTA NO SERVIDOR: ", data.listaOrdemChegada)
+
+    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio}, terminou = ${data.jogoTerminou}, qtd_finalistas = ${data.qtdFinalistas}, lista_chegada = "${data.listaOrdemChegada.join(', ')}" WHERE id_sala = "${data.idSalaAtual}";`
     db.query(sqlUpdate, (err, res) => {
         if (err) {
             throw err;

@@ -34,8 +34,6 @@ app.use(express.static('public'))
 app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    console.log("VALOR RECEBIDO DA LISTA NO SERVIDOR: ", data.listaOrdemChegada)
-
     let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio}, terminou = ${data.jogoTerminou}, qtd_finalistas = ${data.qtdFinalistas}, lista_chegada = "${data.listaOrdemChegada.join(', ')}" WHERE id_sala = "${data.idSalaAtual}";`
     db.query(sqlUpdate, (err, res) => {
         if (err) {
@@ -217,6 +215,38 @@ app.post('/entrarSala', (req, resposta) => {
     })
 })
 
+//Rota retomar sala iniciada
+app.post('/retomarSala', (req, res) => {
+
+    const data = req.body;
+
+    let sql = `SELECT * FROM sala WHERE nome = "${data.nomeSala}";`
+    db.query(sql, (err, resultado) => {
+        if (err) throw err;
+        // res.send(resultado)
+
+        if (resultado.length > 0) {
+            
+            // caso a sala exista, conferir se o jogador está dentro dela
+            let sqlQuery = `SELECT * FROM dados_rodada WHERE id_sala = "${resultado[0].id}" AND nome_user = "${data.nomeUserLogin}";`
+            db.query(sqlQuery, (err, resultadoDados) => {
+                if (err) throw err;
+
+                if (resultadoDados.length > 0){
+                    res.status(200).json({ status: "Jogador está na sala!", id_sala: resultado[0].id});
+                } else{
+                    res.status(200).json({ status: "Jogador não está nessa sala!" });
+                }
+
+            })
+
+        } else {
+            res.status(200).json({ status: "Esta sala não existe!" });
+        }
+
+    })
+})
+
 //Criar rota get com select da base de dados, essa rota será chamada na sketch
 app.get('/getBaseDadosPartida', (req, res) => {
 
@@ -236,12 +266,10 @@ app.get('/getListagemJogadoresSala', (req, res) => {
 
     //Valor passado como parametro na chamada da rota
     let idSalaAtual = req.query.idSalaAtual;
-
     let sql = `SELECT * FROM sala WHERE id = "${idSalaAtual}";`
     db.query(sql, (err, resultado) => {
         if (err) throw err;
-        //console.log(res);
-
+        
         //Armezena o id dos jogadores no array listaIdJogadores
         let idJogadores = [resultado[0].id_user_1, resultado[0].id_user_2, resultado[0].id_user_3, resultado[0].id_user_4]
 
@@ -265,7 +293,7 @@ app.post('/updateEstadoSala', (req, res) => {
     db.query(sqlUpdate, (err, resultado) => {
         if (err) throw err;
 
-        res.status(200).json({ status: "Estado da sala alterado para iniciado!"});
+        res.status(200).json({ status: "Estado da sala alterado para iniciada!"});
 
     })
 })

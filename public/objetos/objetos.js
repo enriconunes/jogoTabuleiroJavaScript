@@ -36,7 +36,7 @@ class Botao {
         this.texto = ""
     }
 
-    desenhar_botao() {
+    desenhar_botao(larguraTabuleiro) {
 
         push()
 
@@ -58,7 +58,7 @@ class Botao {
         textAlign(CENTER, CENTER)
         fill(255)
         strokeWeight(0)
-        textSize(this.largura * 0.09)
+        textSize(larguraTabuleiro * 0.015)
         text(this.texto, this.posX, this.posY)
         pop()
 

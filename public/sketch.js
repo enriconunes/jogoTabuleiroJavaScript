@@ -59,6 +59,7 @@ function setup() {
   botaoCriarSala = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
   botaoEntrarSala = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
   botaoEntrarPartida = new Botao(width / 2, height / 2 + tabuleiro.altura * 0.3, "black")
+  botaoRetomarSala = new Botao(width / 2 - tabuleiro.largura * 0.005, height / 2 + tabuleiro.altura * 0.225, "black")
   jogo = new Jogo();
   userInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.24, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
   senhaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
@@ -121,12 +122,12 @@ function draw() {
     botaoCriarConta.texto = "Criar uma conta"
     botaoCriarConta.largura = tabuleiro.largura * 0.19
     botaoCriarConta.altura = tabuleiro.altura * 0.1
-    botaoCriarConta.desenhar_botao()
+    botaoCriarConta.desenhar_botao(tabuleiro.largura)
 
     botaoEntrarConta.texto = "Entrar na conta"
     botaoEntrarConta.largura = tabuleiro.largura * 0.19
     botaoEntrarConta.altura = tabuleiro.altura * 0.1
-    botaoEntrarConta.desenhar_botao()
+    botaoEntrarConta.desenhar_botao(tabuleiro.largura)
 
     //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
     exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
@@ -149,15 +150,20 @@ function draw() {
     botaoCriarSala.texto = "Criar nova sala"
     botaoCriarSala.largura = tabuleiro.largura * 0.19
     botaoCriarSala.altura = tabuleiro.altura * 0.1
-    botaoCriarSala.desenhar_botao()
+    botaoCriarSala.desenhar_botao(tabuleiro.largura)
 
     botaoEntrarSala.texto = "Entrar na sala"
     botaoEntrarSala.largura = tabuleiro.largura * 0.19
     botaoEntrarSala.altura = tabuleiro.altura * 0.1
-    botaoEntrarSala.desenhar_botao()
+    botaoEntrarSala.desenhar_botao(tabuleiro.largura)
+
+    botaoRetomarSala.texto = "Retomar sala"
+    botaoRetomarSala.largura = tabuleiro.largura * 0.4
+    botaoRetomarSala.altura = tabuleiro.altura * 0.1
+    botaoRetomarSala.desenhar_botao(tabuleiro.largura)
 
     //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
-    exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
+    exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.32, tabuleiro.largura * 0.018, "white")
 
   }
   else if (paginaAtual == 2) {
@@ -193,7 +199,7 @@ function draw() {
     botaoEntrarPartida.texto = "Entrar na partida"
     botaoEntrarPartida.largura = tabuleiro.largura * 0.19
     botaoEntrarPartida.altura = tabuleiro.altura * 0.1
-    botaoEntrarPartida.desenhar_botao()
+    botaoEntrarPartida.desenhar_botao(tabuleiro.largura)
 
     exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
 
@@ -242,8 +248,6 @@ function draw() {
     if (dadosCarregados) {
       console.log("VOCE É O JOGADOR NUMERO: ", numeroJogadorLogado)
 
-      console.log("LISTA RECEBIDA PELO SERVIDOR: ", jogo.ordemChegada)
-
       //Desenhar tabuleiro
       tabuleiro.desenhar_tabuleiro()
 
@@ -258,11 +262,6 @@ function draw() {
       for (let n = jogo.qtdJogadores; n > 0; n--) {
         jogador[n - 1].desenhar_jogador(casa[jogador[n - 1].posicao])
       }
-
-      // //Se o jogador ja tiver chegado, incrementa um valor e pula vez dele
-      // if (jogador[turnoJogador - 1].posicao == 46) {
-      //   gerirTurno(jogo.qtdJogadores, jogador[turnoJogador - 1])
-      // }
 
       //Desenhar dado
       switch (retornoGirardado) {
@@ -535,6 +534,30 @@ function mousePressed() {
     }, (err) => console.log(err))
   }
 
+  //Botao retomar sala
+  if (botaoRetomarSala.mouseIsHover() && paginaAtual == 1){
+
+    //Dados do input
+    let jsonInput = {
+      "idUserLogin": idUserLogin,
+      "nomeUserLogin": nomeUserLogin,
+      "nomeSala": salaInput.input.value()
+    }
+
+    //Enviar dados do input para o servidor
+    httpPost('/retomarSala', jsonInput, 'json', (data) => {
+      respostaServidorUser = data.status
+
+      if (data.status == "Jogador está na sala!"){
+        //Avançar para a proxima pagina
+        paginaAtual = 2
+        idSalaAtual = data.id_sala
+      }
+
+    }, (err) => console.log(err))
+
+  }
+
   //Botao iniciar partida
   if (botaoEntrarPartida.mouseIsHover() && paginaAtual == 2) {
     if (jogo.qtdJogadores < 2) {
@@ -549,13 +572,10 @@ function mousePressed() {
       //Update do estado da sala, passar de 'aberta' para 'inicializada'
       httpPost('/updateEstadoSala', jsonSalaId, 'json', (data) => {
         // console.log(data)
-        if (data.status == "Jogador entrou na sala com sucesso!") {
-          //Avançar para a proxima pagina
-          paginaAtual = 2
-          idSalaAtual = data.id_sala
-          console.log("O jogador entrou na sala com ID ", idSalaAtual)
-        } else {
+        if (data.status == "Estado da sala alterado para iniciada!") {
           respostaServidorUser = data.status
+        } else {
+          respostaServidorUser = "Erro ao iniciar a partida!"
         }
       }, (err) => console.log(err))
 
@@ -563,5 +583,6 @@ function mousePressed() {
 
     loop()
   }
+
 
 }

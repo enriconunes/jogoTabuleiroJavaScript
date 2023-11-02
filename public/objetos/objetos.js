@@ -258,24 +258,24 @@ class Tabuleiro {
         strokeWeight(this.larguraBorda)
         rectMode(CENTER)
 
-        if (width >= 1280) {
-            //exibir o console na lateral
-            rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
-        } else {
-            //exibir o console embaixo
-            rect(width / 2, height / 2 + this.altura / 1.25, this.largura * 0.25, this.altura * 0.25)
-        }
+        // if (width >= 1280) {
+        //exibir o console na lateral
+        rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
+        // } else {
+        //exibir o console embaixo
+        // rect(width / 2, height / 2 + this.altura / 1.25, this.largura * 0.25, this.altura * 0.25)
+        // }
 
         //escrever a mensagem
         fill(255, 255, 255, 230)
         strokeWeight(0.5)
         textSize(this.largura * 0.018)
 
-        if (width >= 1280) {
-            text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
-        } else {
-            text("CONSOLE", width / 2, height / 2 + this.altura / 1.35)
-        }
+        // if (width >= 1280) {
+        text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
+        // } else {
+        // text("CONSOLE", width / 2, height / 2 + this.altura / 1.35)
+        // }
 
         strokeWeight(0)
         textSize(this.largura * 0.015)
@@ -290,7 +290,7 @@ class Tabuleiro {
         pop()
     }
 
-    exibir_lista_jogadores(jogador, quantidade_jogadores){
+    exibir_lista_jogadores(jogador, quantidade_jogadores) {
 
         push()
         //desenhar quadro com lista dos jogadores
@@ -299,21 +299,31 @@ class Tabuleiro {
         strokeWeight(this.larguraBorda)
         rectMode(CENTER)
 
-        rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.83 / 2, this.largura * 0.25, this.altura * 0.25)
+        let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
+        let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.88 / 2
+        let larguraRetangulo = this.largura * 0.25
+        let alturaRetangulo = this.altura * 0.3
+
+        rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
 
         fill(255, 255, 255, 230)
         strokeWeight(0.5)
         textSize(this.largura * 0.018)
-
-        text("JOGADORES", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.7 / 2)
+        textAlign(CENTER, CENTER)
+        text("JOGADORES", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.7 / 2)
 
         strokeWeight(0)
         textSize(this.largura * 0.015)
-        textAlign(CENTER, CENTER)
+        textAlign(LEFT)
 
+        text("Nº", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
+        text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
+        text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
         //listagem
-        for(let x = 0; x < quantidade_jogadores; x++){
-            text(jogador[x].numero + "º. " + jogador[x].nome, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * x)
+        for (let x = 0; x < quantidade_jogadores; x++) {
+            text(jogador[x].numero, posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
+            text(jogador[x].nome, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
+            text(jogador[x].pontuacao, posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
         }
 
         pop()
@@ -365,7 +375,8 @@ class Casa {
 
     resolver_desafio(jogador, valorDado, tabuleiro) {
         if (valorDado > this.desafioDadoMaiorQue && valorDado < this.desafioDadoMenorQue) {
-            tabuleiro.textoConsoleLateral = `Jogador ${jogador.numero} passou\nno desafio e permaneceu\nno mesmo lugar.`
+            tabuleiro.textoConsoleLateral = `Jogador ${jogador.numero} passou\nno desafio e permaneceu\nno mesmo lugar\n+5 pontos!`
+            jogador.pontuacao += 7
         } else {
             jogador.posicao -= this.desafioVoltarCasasQtd
             tabuleiro.textoConsoleLateral = `Jogador ${jogador.numero} perdeu\no desafio e voltou\n${this.desafioVoltarCasasQtd} casas.`
@@ -503,14 +514,21 @@ class Jogador {
             if (valorDado1 > valorDado2) {
                 jogadorCasaOcupada.posicao = 0
                 tabuleiro.textoConsoleLateral = `Jogador ${jogadorTurnoAtual.numero} venceu o duelo\npor ${valorDado1} a ${valorDado2} e o jogador ${jogadorCasaOcupada.numero} voltou\nao início.`
+
+                //Adiciona 10 pontos ao jogador que venceu
+                jogadorTurnoAtual.pontuacao += 10
             }
             else if (valorDado1 == valorDado2) {
                 jogadorTurnoAtual.posicao = 0
                 tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o duelo\npelo empate de ${valorDado2} a ${valorDado1} e o jogador ${jogadorTurnoAtual.numero}\nvoltou ao início.`
+
+                jogadorCasaOcupada.pontuacao += 10
             }
             else if (valorDado1 < valorDado2) {
                 jogadorTurnoAtual.posicao = 0
                 tabuleiro.textoConsoleLateral = `Jogador ${jogadorCasaOcupada.numero} venceu o duelo\npor ${valorDado2} a ${valorDado1} e o jogador ${jogadorTurnoAtual.numero} voltou\nao início.`
+
+                jogadorCasaOcupada.pontuacao += 10
             }
 
             //Resetar valor da variavel apos o duelo ser finalizado

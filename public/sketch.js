@@ -60,6 +60,7 @@ function setup() {
   botaoEntrarSala = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
   botaoEntrarPartida = new Botao(width / 2, height / 2 + tabuleiro.altura * 0.3, "black")
   botaoRetomarSala = new Botao(width / 2 - tabuleiro.largura * 0.005, height / 2 + tabuleiro.altura * 0.225, "black")
+  botaoVoltar = new Botao(width / 2 - tabuleiro.largura / 2 * 0.9, height / 2 + tabuleiro.altura / 2 * 0.9, "black")
   jogo = new Jogo();
   userInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.24, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
   senhaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
@@ -162,6 +163,11 @@ function draw() {
     botaoRetomarSala.altura = tabuleiro.altura * 0.1
     botaoRetomarSala.desenhar_botao(tabuleiro.largura)
 
+    botaoVoltar.texto = "←"
+    botaoVoltar.largura = tabuleiro.largura * 0.04
+    botaoVoltar.altura = tabuleiro.altura * 0.05
+    botaoVoltar.desenhar_botao(tabuleiro.largura)
+
     //Exibir mensagem enviada pelo servidor ao tentar criar uma conta ou entrar no perfil
     exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.32, tabuleiro.largura * 0.018, "white")
 
@@ -200,6 +206,9 @@ function draw() {
     botaoEntrarPartida.largura = tabuleiro.largura * 0.19
     botaoEntrarPartida.altura = tabuleiro.altura * 0.1
     botaoEntrarPartida.desenhar_botao(tabuleiro.largura)
+
+    //Botao voltar
+    botaoVoltar.desenhar_botao(tabuleiro.largura)
 
     exibirTexto(respostaServidorUser, width / 2, height / 2 + tabuleiro.altura * 0.19, tabuleiro.largura * 0.018, "white")
 
@@ -582,6 +591,11 @@ function mousePressed() {
     }
 
     loop()
+  }
+
+  //Botao voltar
+  if (botaoVoltar.mouseIsHover() && (paginaAtual == 1 || paginaAtual == 2)){
+    location.reload()
   }
 
 

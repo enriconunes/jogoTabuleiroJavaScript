@@ -320,10 +320,50 @@ class Tabuleiro {
         text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
         text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
         //listagem
+        let espacamentoLinhas = this.largura * 0.023
         for (let x = 0; x < quantidade_jogadores; x++) {
-            text(jogador[x].numero, posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
-            text(jogador[x].nome, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
-            text(jogador[x].pontuacao, posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + 20 * (x + 1))
+            text(jogador[x].numero, posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+            text(jogador[x].nome, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+            text(jogador[x].pontuacao, posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+        }
+
+        pop()
+    }
+
+    exibir_lista_ranking(listaRanking){
+        push()
+        //desenhar quadro com lista dos jogadores
+        fill("#185c37")
+        stroke(255)
+        strokeWeight(this.larguraBorda)
+        rectMode(CENTER)
+
+        let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
+        let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.887
+        let larguraRetangulo = this.largura * 0.25
+        let alturaRetangulo = this.altura * 0.515
+
+        rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
+
+        fill(255, 255, 255, 230)
+        strokeWeight(0.5)
+        textSize(this.largura * 0.018)
+        textAlign(CENTER, CENTER)
+        text("RANKING MUNDIAL", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.68)
+
+        strokeWeight(0)
+        textSize(this.largura * 0.015)
+        textAlign(LEFT)
+
+        // text("Nº", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.72)
+        // text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.72)
+        // text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.72)
+        //listagem
+        let espacamentoLinhas = this.largura * 0.023
+        for (let x = 0; x < listaRanking.length; x++) {
+            text((x+1)+"º", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+            text(listaRanking[x].nome_user, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+            text(listaRanking[x].pontuacao+" pts.", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
         }
 
         pop()
@@ -376,10 +416,11 @@ class Casa {
     resolver_desafio(jogador, valorDado, tabuleiro) {
         if (valorDado > this.desafioDadoMaiorQue && valorDado < this.desafioDadoMenorQue) {
             tabuleiro.textoConsoleLateral = `Jogador ${jogador.numero} passou\nno desafio e permaneceu\nno mesmo lugar\n+5 pontos!`
-            jogador.pontuacao += 7
+            jogador.pontuacao += 6
         } else {
             jogador.posicao -= this.desafioVoltarCasasQtd
             tabuleiro.textoConsoleLateral = `Jogador ${jogador.numero} perdeu\no desafio e voltou\n${this.desafioVoltarCasasQtd} casas.`
+            jogador.pontuacao += 1
         }
         desafioAberto = false
         console.log("Valor dado desafio: ", valorDado)
@@ -398,7 +439,7 @@ class Jogador {
         this.posicaoCirculoY = ""
         this.circuloLargura = ""
         this.pontuacao = 100
-        this.estado = ""
+        this.chegou = false
     }
 
     desenhar_jogador(objetoCasa) {
@@ -467,7 +508,7 @@ class Jogador {
         }
 
         if (this.posicao == 46) {
-            this.estado = "chegou"
+            this.chegou = true
         }
 
         //Decrementa um valor da pontuacao a cada jogada

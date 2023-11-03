@@ -34,14 +34,14 @@ app.use(express.static('public'))
 app.post('/updadeDadosPartida', async (req, resposta) => {
     const data = req.body; // dados enviados pelo sketch.js
 
-    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio}, terminou = ${data.jogoTerminou}, qtd_finalistas = ${data.qtdFinalistas}, lista_chegada = "${data.listaOrdemChegada.join(', ')}" WHERE id_sala = "${data.idSalaAtual}";`
+    let sqlUpdate = `UPDATE dados_rodada SET dado_atual = ${data.dadoAtual}, turno_atual = ${data.turno_atual}, mensagem_console = "${data.mensagem_console}", desafio_aberto = ${data.desafio_aberto}, duelo_aberto = ${data.duelo_aberto}, jogador_duelado = ${data.jogadorCasaOcupada}, jogador_desafiador = ${data.jogadorDesafiador}, qtd_giros_dado_duelo = ${data.qtdGirosDadoDesafio}, terminou = ${data.jogoTerminou}, lista_chegada = "${data.listaOrdemChegada.join(', ')}" WHERE id_sala = "${data.idSalaAtual}";`
     db.query(sqlUpdate, (err, res) => {
         if (err) {
             throw err;
         } else {
             //Apos fazer update dos valores gerais da partida (valores que servem para todos os jogadores),
             //Atualizar tambem os dados do jogador atual
-            let sqlUpdateJogador = `UPDATE dados_rodada SET posicao = ${data.posicao}, pontuacao = ${data.pontuacao} WHERE id_sala = ${data.idSalaAtual} AND num_atribuido = ${data.numeroJogadorLogado};`
+            let sqlUpdateJogador = `UPDATE dados_rodada SET posicao = ${data.posicao}, pontuacao = ${data.pontuacao}, chegou = ${data.chegou} WHERE id_sala = ${data.idSalaAtual} AND num_atribuido = ${data.numeroJogadorLogado};`
 
             db.query(sqlUpdateJogador, (err, res) => {
                 if (err) {
@@ -280,6 +280,18 @@ app.get('/getListagemJogadoresSala', (req, res) => {
             // console.log("RESULTADO TABELA USERS:\n", resultado);
             res.send(resultado)
         })
+    })
+})
+
+app.get('/listagemRanking', (req, res) => {
+
+    let sql = "SELECT nome_user, pontuacao FROM dados_rodada WHERE chegou = 1 ORDER BY pontuacao DESC  LIMIT 10;"
+
+    db.query(sql, (err, resultado) => {
+        if (err) throw err;
+
+        res.send(resultado)
+
     })
 })
 

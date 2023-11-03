@@ -30,7 +30,7 @@ let qtdJogadores;
 let dadosCarregados = false;
 let numeroJogadorLogado;
 let jogoTerminou = false;
-let qtdFinalistas;
+let listaRanking = []
 
 function preload() {
 
@@ -61,6 +61,7 @@ function setup() {
   botaoEntrarPartida = new Botao(width / 2, height / 2 + tabuleiro.altura * 0.3, "black")
   botaoRetomarSala = new Botao(width / 2 - tabuleiro.largura * 0.005, height / 2 + tabuleiro.altura * 0.225, "black")
   botaoVoltar = new Botao(width / 2 - tabuleiro.largura / 2 * 0.9, height / 2 + tabuleiro.altura / 2 * 0.9, "black")
+  botaoInico = new Botao(width / 2, height / 2 + tabuleiro.altura / 2 * 0.8, "black")
   jogo = new Jogo();
   userInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.24, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
   senhaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
@@ -190,15 +191,18 @@ function draw() {
 
       //Listagem dos nomes dos jogadores recebidos
       for (let ctr = 0; ctr < data.length; ctr++) {
-
         let nomeFormatado = capitalizeFirstLetter(data[ctr].username);
-
         exibirTexto(nomeFormatado, width / 2, height / 2 - tabuleiro.altura * 0.2 + 30 * ctr, tabuleiro.largura * 0.03, "white")
       }
 
       //Guardar a quantidade de jogadores da sala
       jogo.qtdJogadores = data.length;
 
+    })
+
+    //Armazenar array ranking
+    loadJSON(`/listagemRanking`, (data) => {
+      listaRanking = data
     })
 
     //Botao entrar na partida
@@ -236,8 +240,6 @@ function draw() {
         qtdGirosDado = data[x].qtd_giros_dado_duelo
         jogadorDesafiador = data[x].jogador_desafiador
         jogoTerminou = data[x].terminou
-        qtdFinalistas = data[x].qtd_finalistas
-
         jogo.ordemChegada = data[x].lista_chegada.split(',').map(item => parseInt(item.trim()));
 
 
@@ -318,12 +320,20 @@ function draw() {
         tabuleiro.exibir_console(turnoJogador, capitalizeFirstLetter(jogador[turnoJogador - 1].nome))
         tabuleiro.exibir_console_lateral()
         tabuleiro.exibir_lista_jogadores(jogador, jogo.qtdJogadores)
+        tabuleiro.exibir_lista_ranking(listaRanking)
 
       } else {
 
         //Caso o jogo tenha acabado, "limpa" o tabueleiro e exibe o placar
         tabuleiro.desenhar_tabuleiro()
         tabuleiro.exibir_placar(jogo, jogador)
+
+        //Desenhar botao voltar
+        botaoInico.texto = "Voltar ao início"
+        botaoInico.largura = tabuleiro.largura * 0.19
+        botaoInico.altura = tabuleiro.altura * 0.1
+        botaoInico.desenhar_botao(tabuleiro.largura)
+
 
       }
     }
@@ -374,7 +384,6 @@ function mousePressed() {
       if (jogador[turnoJogador - 1].posicao == 46) {
         console.log("O jogador ", jogador[turnoJogador - 1].numero, " chegou!")
         jogo.adicionar_jogador_lista_chegada(jogador[turnoJogador - 1])
-        qtdFinalistas += 1
       }
 
       if (desafioAberto) {
@@ -426,6 +435,7 @@ function mousePressed() {
         "numeroJogadorLogado": numeroJogadorLogado,
         "posicao": jogador[numeroJogadorLogado - 1].posicao,
         "pontuacao": jogador[numeroJogadorLogado - 1].pontuacao,
+        "chegou": jogador[numeroJogadorLogado - 1].chegou,
         "dadoAtual": retornoGirardado,
         "turno_atual": turnoJogador,
         "idSalaAtual": idSalaAtual,
@@ -438,7 +448,6 @@ function mousePressed() {
         "jogadorDesafiadorNovaPosicao": jogador[jogadorDesafiador].posicao,
         "qtdGirosDadoDesafio": qtdGirosDado,
         "jogoTerminou": jogoTerminou,
-        "qtdFinalistas": qtdFinalistas,
         "listaOrdemChegada": jogo.ordemChegada
       }
 
@@ -595,6 +604,11 @@ function mousePressed() {
 
   //Botao voltar
   if (botaoVoltar.mouseIsHover() && (paginaAtual == 1 || paginaAtual == 2)){
+    location.reload()
+  }
+
+  //Botao voltar ao inicio
+  if (botaoInico.mouseIsHover() && paginaAtual == 3){
     location.reload()
   }
 

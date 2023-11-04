@@ -178,6 +178,11 @@ class Tabuleiro {
 
         //escrever a mensagem
         let textoConsole = `Vez do jogador ${turno} - ${nomeJogador}`
+
+        if (turno == numeroJogadorLogado){
+            textoConsole = `É a sua vez de jogar!`
+        }
+
         fill(255, 255, 255, 230)
         strokeWeight(0)
         textSize(this.largura * 0.02)
@@ -252,121 +257,115 @@ class Tabuleiro {
 
     exibir_console_lateral() {
         push()
-        //desenhar quadro com o desafio
-        fill("#185c37")
-        stroke(255)
-        strokeWeight(this.larguraBorda)
-        rectMode(CENTER)
-
-        // if (width >= 1280) {
-        //exibir o console na lateral
-        rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
-        // } else {
-        //exibir o console embaixo
-        // rect(width / 2, height / 2 + this.altura / 1.25, this.largura * 0.25, this.altura * 0.25)
-        // }
-
-        //escrever a mensagem
-        fill(255, 255, 255, 230)
-        strokeWeight(0.5)
-        textSize(this.largura * 0.018)
-
-        // if (width >= 1280) {
-        text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
-        // } else {
-        // text("CONSOLE", width / 2, height / 2 + this.altura / 1.35)
-        // }
-
-        strokeWeight(0)
-        textSize(this.largura * 0.015)
-        textAlign(CENTER, CENTER)
 
         if (width >= 1280) {
-            text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
-        } else {
-            text(this.textoConsoleLateral, width / 2, height / 2 + this.altura / 1.23)
-        }
+            //desenhar quadro com o desafio
+            fill("#185c37")
+            stroke(255)
+            strokeWeight(this.larguraBorda)
+            rectMode(CENTER)
 
+            rect(width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 2, this.largura * 0.25, this.altura * 0.25)
+
+            //escrever a mensagem
+            fill(255, 255, 255, 230)
+            strokeWeight(0.5)
+            textSize(this.largura * 0.018)
+
+            text("CONSOLE", width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 4.5)
+
+            strokeWeight(0)
+            textSize(this.largura * 0.015)
+            textAlign(CENTER, CENTER)
+
+            text(this.textoConsoleLateral, width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4, height / 2 - this.altura / 2 + this.altura * 0.25 / 1.8)
+        }
         pop()
     }
 
     exibir_lista_jogadores(jogador, quantidade_jogadores) {
 
         push()
-        //desenhar quadro com lista dos jogadores
-        fill("#185c37")
-        stroke(255)
-        strokeWeight(this.larguraBorda)
-        rectMode(CENTER)
 
-        let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
-        let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.88 / 2
-        let larguraRetangulo = this.largura * 0.25
-        let alturaRetangulo = this.altura * 0.3
+        if (width >= 1280) {
 
-        rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
+            //desenhar quadro com lista dos jogadores
+            fill("#185c37")
+            stroke(255)
+            strokeWeight(this.larguraBorda)
+            rectMode(CENTER)
 
-        fill(255, 255, 255, 230)
-        strokeWeight(0.5)
-        textSize(this.largura * 0.018)
-        textAlign(CENTER, CENTER)
-        text("JOGADORES", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.7 / 2)
+            let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
+            let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.88 / 2
+            let larguraRetangulo = this.largura * 0.25
+            let alturaRetangulo = this.altura * 0.3
 
-        strokeWeight(0)
-        textSize(this.largura * 0.015)
-        textAlign(LEFT)
+            rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
 
-        text("Nº", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
-        text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
-        text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
-        //listagem
-        let espacamentoLinhas = this.largura * 0.023
-        for (let x = 0; x < quantidade_jogadores; x++) {
-            text(jogador[x].numero, posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
-            text(jogador[x].nome, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
-            text(jogador[x].pontuacao, posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+            fill(255, 255, 255, 230)
+            strokeWeight(0.5)
+            textSize(this.largura * 0.018)
+            textAlign(CENTER, CENTER)
+            text("JOGADORES", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.7 / 2)
+
+            strokeWeight(0)
+            textSize(this.largura * 0.015)
+            textAlign(LEFT)
+
+            text("Nº", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
+            text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
+            text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2)
+            //listagem
+            let espacamentoLinhas = this.largura * 0.023
+            for (let x = 0; x < quantidade_jogadores; x++) {
+                text(jogador[x].numero, posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+                text(jogador[x].nome, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+                text(jogador[x].pontuacao, posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.8 / 2 + espacamentoLinhas * (x + 1))
+            }
+
         }
-
         pop()
     }
 
-    exibir_lista_ranking(listaRanking){
+    exibir_lista_ranking(listaRanking) {
         push()
-        //desenhar quadro com lista dos jogadores
-        fill("#185c37")
-        stroke(255)
-        strokeWeight(this.larguraBorda)
-        rectMode(CENTER)
 
-        let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
-        let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.887
-        let larguraRetangulo = this.largura * 0.25
-        let alturaRetangulo = this.altura * 0.515
+        if (width >= 1280) {
 
-        rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
+            //desenhar quadro com lista das melhores pontuacoes
+            fill("#185c37")
+            stroke(255)
+            strokeWeight(this.larguraBorda)
+            rectMode(CENTER)
 
-        fill(255, 255, 255, 230)
-        strokeWeight(0.5)
-        textSize(this.largura * 0.018)
-        textAlign(CENTER, CENTER)
-        text("RANKING MUNDIAL", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.68)
+            let posXRetangulo = width / 2 - this.largura / 2 - this.largura * 0.2 / 1.4
+            let posYRetangulo = height / 2 - this.altura / 2 + this.altura * 0.887
+            let larguraRetangulo = this.largura * 0.25
+            let alturaRetangulo = this.altura * 0.515
 
-        strokeWeight(0)
-        textSize(this.largura * 0.015)
-        textAlign(LEFT)
+            rect(posXRetangulo, posYRetangulo, larguraRetangulo, alturaRetangulo)
 
-        // text("Nº", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.72)
-        // text("Nome", posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.72)
-        // text("Pontos", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.72)
-        //listagem
-        let espacamentoLinhas = this.largura * 0.023
-        for (let x = 0; x < listaRanking.length; x++) {
-            text((x+1)+"º", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
-            text(listaRanking[x].nome_user, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
-            text(listaRanking[x].pontuacao+" pts.", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+            fill(255, 255, 255, 230)
+            strokeWeight(0.5)
+            textSize(this.largura * 0.018)
+            textAlign(CENTER, CENTER)
+            text("RANKING MUNDIAL", posXRetangulo, height / 2 - this.altura / 2 + this.altura * 0.68)
+
+            strokeWeight(0)
+            textSize(this.largura * 0.015)
+            textAlign(LEFT)
+
+            //listagem
+            let espacamentoLinhas = this.largura * 0.023
+            for (let x = 0; x < listaRanking.length; x++) {
+                text((x + 1) + "º", posXRetangulo - larguraRetangulo * 0.4, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+                text(listaRanking[x].nome_user, posXRetangulo - larguraRetangulo * 0.255, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+                text(listaRanking[x].pontuacao + " pts.", posXRetangulo + larguraRetangulo * 0.2, height / 2 - this.altura / 2 + this.altura * 0.73 + espacamentoLinhas * x)
+            }
+
+            pop()
+
         }
-
-        pop()
     }
 }
 
@@ -433,11 +432,11 @@ class Jogador {
         this.numero = 0
         this.nome = ""
         this.cor = ""
-        this.tamanhoBase = ""
+        this.tamanhoBase = 0
         this.posicao = 0
-        this.posicaoCirculoX = ""
-        this.posicaoCirculoY = ""
-        this.circuloLargura = ""
+        this.posicaoCirculoX = 0
+        this.posicaoCirculoY = 0
+        this.circuloLargura = 0
         this.pontuacao = 100
         this.chegou = false
     }
@@ -448,7 +447,7 @@ class Jogador {
         rectMode(CENTER)
         fill(this.cor)
         stroke(255)
-        strokeWeight(2)
+        strokeWeight(1)
 
         //Formato do jogador
         this.posicaoCirculoX = objetoCasa.posicaoX

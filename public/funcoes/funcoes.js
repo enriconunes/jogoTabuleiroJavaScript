@@ -192,3 +192,38 @@ function exibirTexto(texto, posicaoX, posicaoY, tamanho, cor){
 function capitalizeFirstLetter(word) {
     return word.charAt(0).toUpperCase() + word.slice(1);
 }
+
+function instanciarObjetos(){
+    logo = new Logo(logoImg);
+    dado = new Dado(imagemDadoSeis);
+    botaoConfig = new Botao(70, 60, 40, 40, "#5858e0");
+    tabuleiro = new Tabuleiro();
+    botaoCriarConta = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, "black") //"#5858e0"
+    botaoEntrarConta = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+    botaoCriarSala = new Botao(width / 2 - tabuleiro.largura * 0.223 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+    botaoEntrarSala = new Botao(width / 2 + tabuleiro.largura * 0.202 / 2, height / 2 + tabuleiro.altura * 0.09, "black")
+    botaoEntrarPartida = new Botao(width / 2, height / 2 + tabuleiro.altura * 0.3, "black")
+    botaoRetomarSala = new Botao(width / 2 - tabuleiro.largura * 0.005, height / 2 + tabuleiro.altura * 0.225, "black")
+    botaoVoltar = new Botao(width / 2 - tabuleiro.largura / 2 * 0.9, height / 2 + tabuleiro.altura / 2 * 0.9, "black")
+    botaoInico = new Botao(width / 2, height / 2 + tabuleiro.altura / 2 * 0.8, "black")
+    jogo = new Jogo();
+    userInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.24, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
+    senhaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
+    salaInput = new InputText(width / 2 - tabuleiro.largura * 0.21, height / 2 - tabuleiro.altura * 0.1, tabuleiro.largura * 0.4, tabuleiro.altura * 0.09)
+
+    //Instanciar 46 objetos do tipo Casa
+    for (var i = 0; i < 47; i++) {
+        var casaTemp = new Casa(tabuleiro.largura, tabuleiro.altura);
+        casaTemp.numero = i
+        casa.push(casaTemp);
+    }
+
+    //Instanciar 4 objetos do tipo jogador
+    coresJogadores = ["red", "blue", "purple", "black"]
+    for (var i = 0; i < 4; i++) {
+        var jogadorTemp = new Jogador();
+        jogadorTemp.numero = i + 1
+        jogadorTemp.cor = coresJogadores[i]
+        jogador.push(jogadorTemp);
+    }
+}

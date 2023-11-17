@@ -25,5 +25,11 @@ Lucky Maze é um jogo de tabuleiro com dados para até 4 jogadores, utilizando t
 - Vencedor do duelo ganha pontos, perdedor retorna ao início
 - Condição de Vitória: O jogador só chega ao final tirando o número exato restante
 
+## Responsividade
+- Todo o jogo é responsivo
+- Ajusta-se de forma proporcional ao tamanho da tela
+- Dimensões dos elementos do jogo são relativas
+
 ## Considerações Adicionais
 - Implementação de mecânicas variadas para tornar o jogo dinâmico e desafiador.
+
